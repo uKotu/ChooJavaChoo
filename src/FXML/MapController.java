@@ -13,7 +13,7 @@ public class MapController
     private double sceneWidth = 600;
     private double sceneHeight = 600;
 
-    int numberOfTiles = 30;
+    private static final int numberOfTiles = 30;
     double tileWidth = (sceneWidth / numberOfTiles);
     double tileHeight = (sceneHeight / numberOfTiles);
     Tile[][] playField = new Tile[numberOfTiles][numberOfTiles];
@@ -24,19 +24,6 @@ public class MapController
     @FXML
     public void initialize()
     {
-        /*
-        //initially set all the tiles empty
-        for (int i = 0; i < spots; i++)
-        {
-            for (int j = 0; j < spots; j++)
-            {
-
-                EmptyTrack r = new EmptyTrack("", i, j, tileWidth, tileHeight);
-                pane.add(r, i, j);
-                playField[i][j] = r;
-            }
-        }*/
-
         ////////car tracks///
         {
             //left bottom corner cartrack

@@ -50,4 +50,9 @@ public abstract class Tile extends StackPane
     {
         return isTaken;
     }
+
+    public void putContent(String temp)
+    {
+        this.label.setText(temp);
+    }
 }

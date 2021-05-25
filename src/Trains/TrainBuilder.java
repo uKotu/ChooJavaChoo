@@ -1,5 +1,6 @@
 package Trains;
 
+import Main.Main;
 import Trains.Carriages.FreightCarriage;
 import Trains.Carriages.Passenger.BedCarriage;
 import Trains.Carriages.Passenger.RestaurantCarriage;
@@ -13,6 +14,7 @@ import Trains.Locomotives.UniversalLocomotive;
 import Util.RailroadStation;
 
 import java.util.LinkedList;
+import java.util.logging.Level;
 
 public class TrainBuilder
 {
@@ -27,70 +29,60 @@ public class TrainBuilder
         int numberOfPassengerLocomotives = 0, numberOfUniversalLocomotives = 0, numberOfFreightLocomotives = 0;
         int numberOfPassengerCarriages = 0, numberOfFreightCarriages = 0;
         String[] trainPartsDefinition = trainStringDefinition.split("-");
-        for(String part : trainPartsDefinition)
+        try
         {
+            for (String part : trainPartsDefinition)
+            {
                 String[] characteristics = part.split("/.");
 
-                if(characteristics[0]=="L")
+                if (characteristics[0] == "L")
                 {
                     int horsePower = Integer.parseInt(characteristics[2]);
                     Power powerType = null;
-                    if(characteristics[3]=="D")
+                    if (characteristics[3] == "D")
                     {
                         switch (characteristics[4])
                         {
-                            case "E":
-                            {
+                            case "E" -> {
                                 powerType = Power.ELECTRIC;
                                 break;
                             }
-                            case "S":
-                            {
+                            case "S" -> {
                                 powerType = Power.STEAM;
                                 break;
                             }
-                            case "D":
-                            {
+                            case "D" -> {
                                 powerType = Power.DIESEL;
                                 break;
                             }
-                            default:
-                                throw new IllegalStateException("Unexpected value at power type generation: " + characteristics[4]);
-
+                            default -> throw new IllegalStateException("Unexpected value at power type generation: " + characteristics[4]);
                         }
                     }
                     switch (characteristics[1])
                     {
-                        case "F":
-                        {
-                            trainParts.add(new FreightLocomotive(horsePower,powerType));
+                        case "F" -> {
+                            trainParts.add(new FreightLocomotive(horsePower, powerType));
                             numberOfFreightLocomotives++;
                             break;
                         }
-                        case "M":
-                        {
-                            trainParts.add(new ManeuverLocomotive(horsePower,powerType));
+                        case "M" -> {
+                            trainParts.add(new ManeuverLocomotive(horsePower, powerType));
                             break;
                         }
-                        case "P":
-                        {
-                            trainParts.add(new PassengerLocomotive(horsePower,powerType));
+                        case "P" -> {
+                            trainParts.add(new PassengerLocomotive(horsePower, powerType));
                             numberOfPassengerLocomotives++;
                             break;
                         }
-                        case "U":
-                        {
-                            trainParts.add(new UniversalLocomotive(horsePower,powerType));
+                        case "U" -> {
+                            trainParts.add(new UniversalLocomotive(horsePower, powerType));
                             numberOfUniversalLocomotives++;
                             break;
                         }
-
-                        default:
-                            throw new IllegalStateException("Unexpected value: " + characteristics[1]);
+                        default -> throw new IllegalStateException("Unexpected value: " + characteristics[1]);
                     }
 
-                }
-                else if(characteristics[0]=="C")
+                } else if (characteristics[0] == "C")
                 {
                     int carriageLength = Integer.parseInt(characteristics[1]);
                     switch (characteristics[2])
@@ -111,61 +103,69 @@ public class TrainBuilder
                         {
                             switch (characteristics[3])
                             {
-                                case "B":
-                                {
+                                case "B" -> {
                                     int numberOfBeds = Integer.parseInt(characteristics[4]);
-                                    trainParts.add(new BedCarriage(carriageLength,numberOfBeds));
+                                    trainParts.add(new BedCarriage(carriageLength, numberOfBeds));
                                     numberOfPassengerCarriages++;
                                     break;
                                 }
-                                case "R":
-                                {
-                                    trainParts.add(new RestaurantCarriage(carriageLength,characteristics[4]));
+                                case "R" -> {
+                                    trainParts.add(new RestaurantCarriage(carriageLength, characteristics[4]));
                                     numberOfPassengerCarriages++;
                                     break;
                                 }
-                                case "S":
-                                {
+                                case "S" -> {
                                     int numberOfSeats = Integer.parseInt(characteristics[4]);
-                                    trainParts.add(new SeatedCarriage(carriageLength,numberOfSeats));
+                                    trainParts.add(new SeatedCarriage(carriageLength, numberOfSeats));
                                     numberOfPassengerCarriages++;
                                     break;
                                 }
-                                case "Z":
-                                {
+                                case "Z" -> {
                                     trainParts.add(new SleepCarriage(carriageLength));
                                     numberOfPassengerCarriages++;
                                     break;
                                 }
-                                default:
-                                    throw new IllegalArgumentException("Unknown argument");
-
+                                default -> throw new IllegalArgumentException("Unknown argument");
                             }
                         }
                         default:
                             throw new IllegalArgumentException("Unknown argument");
                     }
-                }
-                else
+                } else
                     throw new IllegalArgumentException("Illegal argument");
 
+            }
+            if (numberOfFreightLocomotives > 0 && numberOfPassengerLocomotives > 0)
+                throw new IllegalArgumentException("Mixing locomotives types not allowed");
+            if ((numberOfFreightLocomotives > 0 && numberOfPassengerCarriages > 0) || (numberOfFreightLocomotives > 0 && numberOfPassengerCarriages > 0))
+                throw new IllegalArgumentException("Mixing locomotives types not allowed");
+
+
+
         }
-        if(numberOfFreightLocomotives>0 && numberOfPassengerLocomotives>0)
-            throw new IllegalArgumentException("Mixing locomotives types not allowed");
-        if((numberOfFreightLocomotives>0 && numberOfPassengerCarriages>0) || (numberOfFreightLocomotives>0 && numberOfPassengerCarriages>0))
-            throw new IllegalArgumentException("Mixing locomotives types not allowed");
-
-
+        catch (Exception ex)
+        {
+            Main.logger.log(Level.SEVERE, ex.getMessage(), ex);
+        }
         return trainParts;
     }
 
     public static double speedBuilder(String speedDefinition)
     {
-        Double speed = Double.parseDouble(speedDefinition);
-        if(speed < 0.5 || speed > 5)
-            throw new IllegalArgumentException("Illegal train speed");
-        else
-            return speed;
+        Double speed = null;
+        try
+        {
+            speed = Double.parseDouble(speedDefinition);
+            if (speed < 0.5 || speed > 5)
+                throw new IllegalArgumentException("Illegal train speed");
+
+        }
+        catch (Exception ex)
+        {
+            Main.logger.log(Level.SEVERE, ex.getMessage(), ex);
+        }
+        return speed;
+
     }
 
     public static String routeBuilder(String routeDefinition)
@@ -173,8 +173,15 @@ public class TrainBuilder
         char[] routeDef = routeDefinition.toCharArray();
         for(char x : routeDef)
         {
-           if (x!='A' || x!= 'B' || x!='C' || x!='D' || x!='E')
-               throw new IllegalArgumentException("Unknown route");
+            try
+            {
+                if (!(x != 'A' && x != 'B' && x != 'C' && x != 'D' && x != 'E'))
+                    throw new IllegalArgumentException("Unknown route");
+            }
+            catch(Exception ex)
+            {
+                Main.logger.log(Level.SEVERE, ex.getMessage(), ex);
+            }
         }
         return routeDefinition;
 
