@@ -139,7 +139,7 @@ public class MapController
 
                 addTile(r,i,j);
             }
-            for(int j=26,i=27;i<30;i++)
+            for(int j=25,i=27;i<30;i++)
             {
                 TrainTrack r = new TrainTrack("", i, j, tileWidth, tileHeight);
 
@@ -231,6 +231,15 @@ public class MapController
         playField[x][y] = r;
     }
 
+    public double getTileHeight()
+    {
+        return tileHeight;
+    }
+
+    public double getTileWidth()
+    {
+        return tileWidth;
+    }
 
     public Tile[][] getPlayField()
     {

@@ -87,17 +87,18 @@ public  class Simulation
         }
     }
 
-    private LinkedList<RailroadStation> initializeRailroadStations()
+    private void initializeRailroadStations()
     {
-        StationTile a1 = new StationTile("A",2,29,30,30);
-        StationTile a2 = new StationTile("A",2,28,30,30);
-        StationTile a3 = new StationTile("A",3,28,30,30);
-        StationTile a4 = new StationTile("A",3,29,30,30);
+        
+        StationTile a1 = new StationTile("A",1,27,mapController.getTileHeight(), mapController.getTileHeight());
+        StationTile a2 = new StationTile("A",1,28,mapController.getTileHeight(), mapController.getTileHeight());
+        StationTile a3 = new StationTile("A",2,28,mapController.getTileHeight(), mapController.getTileHeight());
+        StationTile a4 = new StationTile("A",2,27,mapController.getTileHeight(), mapController.getTileHeight());
 
-        mapController.addTile(a1,2,29);
-        mapController.addTile(a2,2,28);
-        mapController.addTile(a3,3,29);
-        mapController.addTile(a4,3,28);
+        mapController.addTile(a1,1,27);
+        mapController.addTile(a2,1,28);
+        mapController.addTile(a3,2,27);
+        mapController.addTile(a4,2,28);
 
         LinkedList<StationTile> stationATiles = new LinkedList<>();
         stationATiles.add(a1); stationATiles.add(a2); stationATiles.add(a3); stationATiles.add(a4);
@@ -105,63 +106,76 @@ public  class Simulation
         stationAExits.add((TrainTrack) map[3][29]); stationAExits.add((TrainTrack) map[3][26]);
 
         RailroadStation stationA = new RailroadStation("A",stationATiles, stationAExits);
+        stations.add(stationA);
 
-        StationTile b1 = new StationTile("B",6,6,30,30);
-        StationTile b2 = new StationTile("B",6,7,30,30);
-        StationTile b3 = new StationTile("B",7,6,30,30);
-        StationTile b4 = new StationTile("B",7,7,30,30);
-        mapController.addTile(b1,6,6);
-        mapController.addTile(b2,6,7);
+        StationTile b1 = new StationTile("B",8,6,mapController.getTileHeight(), mapController.getTileHeight());
+        StationTile b2 = new StationTile("B",8,5,mapController.getTileHeight(), mapController.getTileHeight());
+        StationTile b3 = new StationTile("B",7,6,mapController.getTileHeight(), mapController.getTileHeight());
+        StationTile b4 = new StationTile("B",7,5,mapController.getTileHeight(), mapController.getTileHeight());
+        mapController.addTile(b1,8,6);
+        mapController.addTile(b2,8,5);
         mapController.addTile(b3,7,6);
-        mapController.addTile(b4,7,7);
+        mapController.addTile(b4,7,5);
 
 
         LinkedList<StationTile> stationBTiles = new LinkedList<>();
         stationBTiles.add(b1); stationBTiles.add(b2); stationBTiles.add(b3); stationBTiles.add(b4);
         LinkedList<TrainTrack> stationBExits = new LinkedList<>();
-        stationAExits.add((TrainTrack) map[6][7]); stationAExits.add((TrainTrack) map[9][7]);
+        stationBExits.add((TrainTrack) map[6][7]); stationBExits.add((TrainTrack) map[9][7]);
 
         RailroadStation stationB = new RailroadStation("B",stationBTiles, stationBExits);
+        stations.add(stationB);
 
-        StationTile c1 = new StationTile("C",20,13,30,30);
-        StationTile c2 = new StationTile("C",20,13,30,30);
-        StationTile c3 = new StationTile("C",21,14,30,30);
-        StationTile c4 = new StationTile("C",21,14,30,30);
-        mapController.addTile(c1,20,13);
+        StationTile c1 = new StationTile("C",20,12,mapController.getTileHeight(), mapController.getTileHeight());
+        StationTile c2 = new StationTile("C",20,13,mapController.getTileHeight(), mapController.getTileHeight());
+        StationTile c3 = new StationTile("C",19,12,mapController.getTileHeight(), mapController.getTileHeight());
+        StationTile c4 = new StationTile("C",19,13,mapController.getTileHeight(), mapController.getTileHeight());
+        mapController.addTile(c1,20,12);
         mapController.addTile(c2,20,13);
-        mapController.addTile(c3,21,14);
-        mapController.addTile(c4,21,14);
+        mapController.addTile(c3,19,12);
+        mapController.addTile(c4,19,13);
 
         LinkedList<StationTile> stationCTiles = new LinkedList<>();
         stationCTiles.add(c1); stationCTiles.add(c2); stationCTiles.add(c3); stationCTiles.add(c4);
         LinkedList<TrainTrack> stationCExits = new LinkedList<>();
-        stationAExits.add((TrainTrack) map[3][29]); stationAExits.add((TrainTrack) map[3][26]);
+        stationCExits.add((TrainTrack) map[19][11]); stationCExits.add((TrainTrack) map[21][12]); stationCExits.add((TrainTrack)map[20][14]);
 
         RailroadStation stationC = new RailroadStation("C",stationCTiles, stationCExits);
+        stations.add(stationC);
 
-        StationTile d1 = new StationTile("D",27,3,30,30);
-        StationTile d2 = new StationTile("D",27,2,30,30);
-        StationTile d3 = new StationTile("D",28,2,30,30);
-        StationTile d4 = new StationTile("D",28,3,30,30);
-        mapController.addTile(d1,28,3);
-        mapController.addTile(d2,28,2);
+        StationTile d1 = new StationTile("D",27,1,mapController.getTileHeight(), mapController.getTileHeight());
+        StationTile d2 = new StationTile("D",27,2,mapController.getTileHeight(), mapController.getTileHeight());
+        StationTile d3 = new StationTile("D",26,2,mapController.getTileHeight(), mapController.getTileHeight());
+        StationTile d4 = new StationTile("D",26,1,mapController.getTileHeight(), mapController.getTileHeight());
+        mapController.addTile(d1,26,1);
+        mapController.addTile(d2,26,2);
         mapController.addTile(d3,27,2);
-        mapController.addTile(d4,27,3);
+        mapController.addTile(d4,27,1);
 
-        StationTile e1 = new StationTile("E",26,26,30,30);
-        StationTile e2 = new StationTile("E",27,26,30,30);
-        StationTile e3 = new StationTile("E",26,27,30,30);
-        StationTile e4 = new StationTile("E",27,27,30,30);
-        mapController.addTile(e1,26,27);
+        LinkedList<StationTile> stationDTiles = new LinkedList<>();
+        stationDTiles.add(d1); stationDTiles.add(d2); stationDTiles.add(d3); stationDTiles.add(d4);
+        LinkedList<TrainTrack> stationDExits = new LinkedList<>();
+        stationDExits.add((TrainTrack) map[25][1]);
+
+        RailroadStation stationD = new RailroadStation("D",stationDTiles, stationDExits);
+        stations.add(stationD);
+
+        StationTile e1 = new StationTile("E",26,26,mapController.getTileHeight(), mapController.getTileHeight());
+        StationTile e2 = new StationTile("E",25,26,mapController.getTileHeight(), mapController.getTileHeight());
+        StationTile e3 = new StationTile("E",26,25,mapController.getTileHeight(), mapController.getTileHeight());
+        StationTile e4 = new StationTile("E",25,25,mapController.getTileHeight(), mapController.getTileHeight());
+        mapController.addTile(e1,26,25);
         mapController.addTile(e2,26,26);
-        mapController.addTile(e3,27,27);
-        mapController.addTile(e4,27,26);
+        mapController.addTile(e3,25,25);
+        mapController.addTile(e4,25,26);
 
-        LinkedList<Tile> stationTiles = new LinkedList<>();
-        stationTiles.add(a1); stationTiles.add(a2); stationTiles.add(a3); stationTiles.add(a4);
-        stationTiles.add(b1); stationTiles.add(b2); stationTiles.add(b3); stationTiles.add(b4);
-        stationTiles.add(c1); stationTiles.add(c2); stationTiles.add(c3); stationTiles.add(c4);
-        stationTiles.add(d1); stationTiles.add(d2); stationTiles.add(d3); stationTiles.add(d4);
+        LinkedList<StationTile> stationETiles = new LinkedList<>();
+        stationETiles.add(e1); stationETiles.add(e2); stationETiles.add(e3); stationETiles.add(e4);
+        LinkedList<TrainTrack> stationEExits = new LinkedList<>();
+        stationEExits.add((TrainTrack) map[25][27]); stationEExits.add((TrainTrack) map[26][24]);
+
+        RailroadStation stationE = new RailroadStation("E",stationETiles, stationEExits);
+        stations.add(stationE);
 
     }
     public void start()
@@ -174,7 +188,7 @@ public  class Simulation
 
 
             //create railroad stations
-            stations = initializeRailroadStations();
+            initializeRailroadStations();
 
 
 

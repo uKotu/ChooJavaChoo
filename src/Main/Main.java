@@ -2,6 +2,7 @@ package Main;
 
 import FXML.MapController;
 import Tiles.Tile;
+import Util.Simulation;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
@@ -50,6 +51,10 @@ public class Main extends Application
             primaryStage.setTitle("Map");
             primaryStage.setScene(new Scene((Parent) x, sceneWidth, sceneHeight));
             primaryStage.show();
+            Simulation simulation = new Simulation(mapController);
+
+            simulation.start();
+
 
         }
         catch (Exception ex)
@@ -57,9 +62,6 @@ public class Main extends Application
             logger.log(Level.SEVERE,ex.getMessage(),ex);
 
         }
-        var y = mapController.getPlayField();
-        y[0][21].putContent("L10");
-        mapController.updateGridPane(y);
     }
 
     public static MapController getMapController()
