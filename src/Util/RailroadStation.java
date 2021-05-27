@@ -13,6 +13,7 @@ public class RailroadStation
     LinkedList<StationTile> tilesTaken;
     PriorityQueue<Train> trainQueue;
     LinkedList<TrainTrack> possibleExitCoordinates;
+    LinkedList<RailPath> railPaths;
     String name;
 
     RailroadStation(String name, LinkedList<StationTile> tilesTaken, LinkedList<TrainTrack> possibleExitCoordinates)

@@ -223,7 +223,7 @@ public class MapController
 
 
     }
-    private void addTile(Tile r, int x, int y)
+    public void addTile(Tile r, int x, int y)
     {
         pane.getChildren().remove(playField[x][y]);
         pane.add(r, x, y);

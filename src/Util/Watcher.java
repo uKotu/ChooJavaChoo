@@ -14,7 +14,6 @@ public class Watcher extends Thread
 
     public Watcher(String filePath, Method updateMethod)
     {
-
         this.filePath=filePath;
         this.updateMethod=updateMethod;
     }
