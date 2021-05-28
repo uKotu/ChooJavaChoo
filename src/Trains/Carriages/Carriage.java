@@ -31,4 +31,22 @@ public abstract class Carriage implements Connectable
     public int getxCoordinate() { return xCoordinate;}
     public int getyCoordinate() { return yCoordinate;}
 
+    @Override
+    public void setxCoordinate(int xCoordinate)
+    {
+        this.xCoordinate = xCoordinate;
+    }
+
+    @Override
+    public void setyCoordinate(int yCoordinate)
+    {
+        this.yCoordinate = yCoordinate;
+    }
+
+    @Override
+    public String toString()
+    {
+        return carriageID+"";
+    }
+
 }

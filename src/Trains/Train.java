@@ -3,11 +3,15 @@ package Trains;
 import Tiles.Tile;
 import Tiles.TrainPassable;
 import Tiles.TrainTrack;
+import Trains.Carriages.Carriage;
 import Trains.Locomotives.Locomotive;
 import Util.Coordinates;
 import Util.RailroadStation;
 
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 public class Train implements Runnable
 {
@@ -64,16 +68,17 @@ public class Train implements Runnable
         return route.toCharArray()[positionOnRoute + 1];
     }
 
-    private synchronized void move()
-    {
-        int newX, newY;
-    }
+
     @Override
     public void run()
     {
         switch (currentState)
         {
             case Parked ->
+                    {
+
+                    }
+            case Normal ->
                     {
                         synchronized (map)
                         {
@@ -84,15 +89,55 @@ public class Train implements Runnable
 
                         }
                     }
-            case Normal ->
-                    {
-                        move();
-                    }
             case ExitingParking ->
                     {
 
                     }
         }
+
+    }
+    private synchronized void move()
+    {
+        int newX, newY;
+        Locomotive trainHead = (Locomotive) parts.get(0);
+        RailroadStation nextStation = null;
+        for (var x: stations)
+        {
+            if (x.getName()==nextStationName()+"")
+                nextStation = x;
+            break;
+        }
+
+        HashMap<Integer,Tile> tileDistanceMap = new HashMap<>();
+        for (var track : getAdjacentTracks())
+        {
+            int distance = Coordinates.calculateDistance(
+                    new Coordinates(track.getxCoordinate(),track.getyCoordinate()),
+                    new Coordinates(nextStation.getxCoordinate(), nextStation.getyCoordinate()));
+            tileDistanceMap.put(distance,track);
+        }
+        var nextTileValueEntry = Collections.min(tileDistanceMap.entrySet(), Map.Entry.comparingByKey());
+        var nextTile = nextTileValueEntry.getValue();
+        newX = nextTile.getxCoordinate(); newY = nextTile.getyCoordinate();
+
+
+        for(int i = parts.size();i>0;i--)
+        {
+            var rear = parts.get(i-1);
+            var front = parts.get(i-2);
+
+            //clear the rear tile
+            map[rear.getxCoordinate()][rear.getyCoordinate()].putContent("");
+
+            rear.setxCoordinate(front.getxCoordinate());
+            rear.setyCoordinate(front.getyCoordinate());
+            map[rear.getxCoordinate()][rear.getyCoordinate()].putContent(rear.toString());
+
+        }
+        //move the train leading part to new coordinates
+        var front = parts.getFirst();
+        front.setxCoordinate(newX); front.setyCoordinate(newY);
+        map[front.getxCoordinate()][front.getyCoordinate()].putContent(front.toString());
 
     }
 }

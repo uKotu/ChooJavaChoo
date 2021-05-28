@@ -28,4 +28,22 @@ public abstract class Locomotive implements Connectable
     {
         return yCoordinate;
     }
+
+    @Override
+    public void setxCoordinate(int xCoordinate)
+    {
+        this.xCoordinate = xCoordinate;
+    }
+
+    @Override
+    public void setyCoordinate(int yCoordinate)
+    {
+        this.yCoordinate = yCoordinate;
+    }
+
+    @Override
+    public String toString()
+    {
+        return locomotiveID+"";
+    }
 }

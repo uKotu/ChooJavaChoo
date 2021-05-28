@@ -46,14 +46,21 @@ public class RailroadStation
         }
         return false;
     }
+    public int getxCoordinate()
+    {
+        return tilesTaken.get(0).getxCoordinate();
+    }
+    public int getyCoordinate()
+    {
+        return tilesTaken.get(0).getyCoordinate();
+    }
 
     public LinkedList<TrainTrack> getPossibleExitCoordinates()
     {
         return possibleExitCoordinates;
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
     public void addTrainToQueue(Train train)
