@@ -9,6 +9,10 @@ public abstract class Carriage implements Connectable
     private int carriageID;
     private int carriageLength;
 
+
+    private int xCoordinate, yCoordinate;
+
+
     protected Carriage(int carriageLength)
     {
         carriageID=ID++;
@@ -19,9 +23,12 @@ public abstract class Carriage implements Connectable
     {
         return carriageID;
     }
-
     public int getCarriageLength()
     {
         return carriageLength;
     }
+
+    public int getxCoordinate() { return xCoordinate;}
+    public int getyCoordinate() { return yCoordinate;}
+
 }

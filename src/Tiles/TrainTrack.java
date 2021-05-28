@@ -2,7 +2,7 @@ package Tiles;
 
 import javafx.scene.paint.Color;
 
-public class TrainTrack extends Tile
+public class TrainTrack extends Tile implements TrainPassable
 {
     Color trainTrackColor = Color.LIGHTGRAY;
 

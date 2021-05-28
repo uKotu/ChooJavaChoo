@@ -22,7 +22,34 @@ public class RailroadStation
         this.tilesTaken = tilesTaken;
         this.possibleExitCoordinates = possibleExitCoordinates;
         trainQueue = new PriorityQueue<>();
+    }
+    public boolean nextInQueue(Train train)
+    {
+        return trainQueue.peek() == train;
+    }
+    public boolean greenLight()
+    {
+        Train nextTrain = trainQueue.peek();
+        for(var x : railPaths)
+        {
 
+                if (x.stationsConnected.contains(nextTrain.nextStationName() + ""))
+                {
+                    synchronized (x.map)
+                    {
+                        if (x.isPathClear()) //|| x.trainIsMovingAway()
+                        {
+                            return true;
+                        }
+                    }
+                }
+        }
+        return false;
+    }
+
+    public LinkedList<TrainTrack> getPossibleExitCoordinates()
+    {
+        return possibleExitCoordinates;
     }
 
     public String getName()
@@ -33,4 +60,5 @@ public class RailroadStation
     {
         this.trainQueue.add(train);
     }
+
 }

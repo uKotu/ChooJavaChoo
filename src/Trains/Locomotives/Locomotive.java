@@ -9,6 +9,7 @@ public abstract class Locomotive implements Connectable
     int locomotiveID;
     int power;
     Power powerType;
+    int xCoordinate, yCoordinate;
 
     Locomotive(int power, Power powerType)
     {
@@ -18,4 +19,13 @@ public abstract class Locomotive implements Connectable
 
     }
 
+    public int getxCoordinate()
+    {
+        return xCoordinate;
+    }
+
+    public int getyCoordinate()
+    {
+        return yCoordinate;
+    }
 }
