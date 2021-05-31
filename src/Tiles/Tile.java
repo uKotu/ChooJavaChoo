@@ -22,8 +22,8 @@ public abstract class Tile extends StackPane
     {
         isTaken = false;
 
-        rowNumber = (int) x;
-        columnNumber = (int) y;
+        rowNumber = (int) y; //x
+        columnNumber = (int) x; //y
         coordinates = new Coordinates((int)x,(int)y);
 
 
@@ -39,7 +39,6 @@ public abstract class Tile extends StackPane
     {
         return label.textProperty();
     }
-
 
     public Coordinates getCoordinates()
     {

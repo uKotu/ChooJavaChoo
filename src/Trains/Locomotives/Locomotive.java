@@ -44,6 +44,6 @@ public abstract class Locomotive implements Connectable
     @Override
     public String toString()
     {
-        return locomotiveID+"";
+        return "L"+locomotiveID;
     }
 }

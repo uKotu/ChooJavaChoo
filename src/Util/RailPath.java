@@ -1,29 +1,29 @@
 package Util;
 
 import Tiles.Tile;
+import Trains.Train;
 
 import java.util.LinkedList;
 
 public class RailPath
 {
-
     LinkedList<Tile> tilesOnPath;
     String stationsConnected;
     Tile[][] map;
 
-    RailPath(String stationsConnected)
+    public RailPath(String stationsConnected)
     {
         this.stationsConnected = stationsConnected;
         tilesOnPath = new LinkedList<>();
     }
 
-    public void addTile(Tile tile, Tile[][] map)
+    public void addTile(Tile tile)
     {
         tilesOnPath.add(tile);
     }
     public boolean isPathClear()
     {
-        synchronized (map)
+        synchronized (Train.class)
         {
             for(Tile x: tilesOnPath)
             {

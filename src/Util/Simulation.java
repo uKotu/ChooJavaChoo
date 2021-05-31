@@ -20,18 +20,13 @@ import static java.nio.file.StandardWatchEventKinds.*;
 
 public  class Simulation
 {
-    private final static String trainFolder = "";
+    private final static String trainFolder = "C:\\Users\\Lenovo\\IdeaProjects\\ChooJavaChoo\\Trainspotting";
     private final static String carFolder = "";
 
     LinkedList<Train> trains;
     LinkedList<RailroadStation> stations;
     Tile[][] map;
     MapController mapController;
-
-
-
-
-
 
     public Simulation(MapController controller)
     {
@@ -63,7 +58,7 @@ public  class Simulation
         return watchKey;
 
     }
-    private void addTrain(String filename)
+    public void addTrain(String filename)
     {
         BufferedReader reader;
         try
@@ -78,7 +73,10 @@ public  class Simulation
             trainRoute = TrainBuilder.routeBuilder(trainRoute);
 
             reader.close();
-            trains.add(new Train(trainParts,trainSpeed,trainRoute,map,stations));
+            Train newTrain = new Train(trainParts,trainSpeed,trainRoute,map,stations);
+            trains.add(newTrain);
+
+            newTrain.run();
 
         }
         catch (Exception ex)
@@ -86,7 +84,6 @@ public  class Simulation
             Main.logger.log(Level.SEVERE,ex.getMessage(),ex);
         }
     }
-
     private void initializeRailroadStations()
     {
         
@@ -103,9 +100,14 @@ public  class Simulation
         LinkedList<StationTile> stationATiles = new LinkedList<>();
         stationATiles.add(a1); stationATiles.add(a2); stationATiles.add(a3); stationATiles.add(a4);
         LinkedList<TrainTrack> stationAExits = new LinkedList<>();
-        stationAExits.add((TrainTrack) map[3][29]); stationAExits.add((TrainTrack) map[3][26]);
+        stationAExits.add((TrainTrack) map[2][29]); stationAExits.add((TrainTrack) map[2][26]);
 
         RailroadStation stationA = new RailroadStation("A",stationATiles, stationAExits);
+        for(var x : mapController.getRailPaths())
+        {
+            if(x.stationsConnected.contains("A"))
+                stationA.railPaths.add(x);
+        }
         stations.add(stationA);
 
         StationTile b1 = new StationTile("B",8,6,mapController.getTileHeight(), mapController.getTileHeight());
@@ -124,6 +126,11 @@ public  class Simulation
         stationBExits.add((TrainTrack) map[6][7]); stationBExits.add((TrainTrack) map[9][7]);
 
         RailroadStation stationB = new RailroadStation("B",stationBTiles, stationBExits);
+        for(var x : mapController.getRailPaths())
+        {
+            if(x.stationsConnected.contains("B"))
+                stationB.railPaths.add(x);
+        }
         stations.add(stationB);
 
         StationTile c1 = new StationTile("C",20,12,mapController.getTileHeight(), mapController.getTileHeight());
@@ -141,6 +148,11 @@ public  class Simulation
         stationCExits.add((TrainTrack) map[19][11]); stationCExits.add((TrainTrack) map[21][12]); stationCExits.add((TrainTrack)map[20][14]);
 
         RailroadStation stationC = new RailroadStation("C",stationCTiles, stationCExits);
+        for(var x : mapController.getRailPaths())
+        {
+            if(x.stationsConnected.contains("C"))
+                stationC.railPaths.add(x);
+        }
         stations.add(stationC);
 
         StationTile d1 = new StationTile("D",27,1,mapController.getTileHeight(), mapController.getTileHeight());
@@ -158,6 +170,11 @@ public  class Simulation
         stationDExits.add((TrainTrack) map[25][1]);
 
         RailroadStation stationD = new RailroadStation("D",stationDTiles, stationDExits);
+        for(var x : mapController.getRailPaths())
+        {
+            if(x.stationsConnected.contains("D"))
+                stationD.railPaths.add(x);
+        }
         stations.add(stationD);
 
         StationTile e1 = new StationTile("E",26,26,mapController.getTileHeight(), mapController.getTileHeight());
@@ -175,6 +192,11 @@ public  class Simulation
         stationEExits.add((TrainTrack) map[25][27]); stationEExits.add((TrainTrack) map[26][24]);
 
         RailroadStation stationE = new RailroadStation("E",stationETiles, stationEExits);
+        for(var x : mapController.getRailPaths())
+        {
+            if(x.stationsConnected.contains("E"))
+                stationE.railPaths.add(x);
+        }
         stations.add(stationE);
 
     }
@@ -182,14 +204,12 @@ public  class Simulation
     {
         try
         {
-            //start filewatcher
-            Watcher trainWatcher = new Watcher(trainFolder, this.getClass().getDeclaredMethod("addTrain",String.class));
-            trainWatcher.start();
-
-
             //create railroad stations
             initializeRailroadStations();
 
+            //start filewatcher
+            Watcher trainWatcher = new Watcher(trainFolder, this.getClass().getDeclaredMethod("addTrain",String.class),this);
+            trainWatcher.start();
 
 
             //create trains/cars

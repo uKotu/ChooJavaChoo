@@ -43,7 +43,6 @@ public class Main extends Application
     {
         try
         {
-
             FXMLLoader fxmlLoader = new FXMLLoader();
             var x = fxmlLoader.load(getClass().getResource("/FXML/Map.fxml").openStream());
             mapController = fxmlLoader.getController();

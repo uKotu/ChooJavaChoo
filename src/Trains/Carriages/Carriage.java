@@ -46,7 +46,7 @@ public abstract class Carriage implements Connectable
     @Override
     public String toString()
     {
-        return carriageID+"";
+        return "C"+carriageID;
     }
 
 }

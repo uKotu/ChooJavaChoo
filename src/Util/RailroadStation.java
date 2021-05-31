@@ -4,14 +4,13 @@ import Tiles.StationTile;
 import Tiles.TrainTrack;
 import Trains.Train;
 
+import java.util.ArrayDeque;
 import java.util.LinkedList;
-import java.util.PriorityQueue;
-import java.util.Queue;
 
 public class RailroadStation
 {
     LinkedList<StationTile> tilesTaken;
-    PriorityQueue<Train> trainQueue;
+    ArrayDeque<Train> trainQueue;
     LinkedList<TrainTrack> possibleExitCoordinates;
     LinkedList<RailPath> railPaths;
     String name;
@@ -21,7 +20,9 @@ public class RailroadStation
         this.name = name;
         this.tilesTaken = tilesTaken;
         this.possibleExitCoordinates = possibleExitCoordinates;
-        trainQueue = new PriorityQueue<>();
+        this.trainQueue = new ArrayDeque<>();
+        this.railPaths = new LinkedList<>();
+
     }
     public boolean nextInQueue(Train train)
     {
@@ -35,7 +36,7 @@ public class RailroadStation
 
                 if (x.stationsConnected.contains(nextTrain.nextStationName() + ""))
                 {
-                    synchronized (x.map)
+                    synchronized (Train.class)
                     {
                         if (x.isPathClear()) //|| x.trainIsMovingAway()
                         {

@@ -11,11 +11,13 @@ public class Watcher extends Thread
 
     private String filePath;
     private Method updateMethod;
+    private Simulation sim;
 
-    public Watcher(String filePath, Method updateMethod)
+    public Watcher(String filePath, Method updateMethod, Simulation sim)
     {
         this.filePath=filePath;
         this.updateMethod=updateMethod;
+        this.sim = sim;
     }
 
     @Override
@@ -52,7 +54,7 @@ public class Watcher extends Thread
                     String fileName = ev.context().toString().trim();
                     if ((kind.equals(StandardWatchEventKinds.ENTRY_MODIFY)) &&
                             (fileName.endsWith(".properties") || fileName.endsWith(".txt") || fileName.endsWith(".ser")))
-                        updateMethod.invoke(fileName);
+                        sim.addTrain(filePath+"\\"+fileName);
                 }
                 boolean valid = key.reset();
                 if (!valid)

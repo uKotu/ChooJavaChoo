@@ -2,7 +2,7 @@ package Tiles;
 
 import javafx.scene.paint.Color;
 
-public class RailwayCrossing extends Tile implements TrainPassable
+public class RailwayCrossing extends TrainTrack implements TrainPassable
 {
 
 
