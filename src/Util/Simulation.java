@@ -73,10 +73,13 @@ public  class Simulation
             trainRoute = TrainBuilder.routeBuilder(trainRoute);
 
             reader.close();
+
             Train newTrain = new Train(trainParts,trainSpeed,trainRoute,map,stations);
             trains.add(newTrain);
 
-            newTrain.run();
+            Thread tren = new Thread(newTrain);
+            tren.start();
+           // newTrain.; //run
 
         }
         catch (Exception ex)

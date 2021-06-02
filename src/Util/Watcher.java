@@ -40,7 +40,7 @@ public class Watcher extends Thread
                 }
                 try
                 {
-                    sleep(500);
+                    sleep(50);
                 }
                 catch
                 (InterruptedException ex)
@@ -52,7 +52,7 @@ public class Watcher extends Thread
                     WatchEvent.Kind<?> kind = event.kind();
                     WatchEvent<Path> ev = (WatchEvent<Path>) event;
                     String fileName = ev.context().toString().trim();
-                    if ((kind.equals(StandardWatchEventKinds.ENTRY_MODIFY)) &&
+                    if ((kind.equals(StandardWatchEventKinds.ENTRY_MODIFY) || kind.equals(StandardWatchEventKinds.ENTRY_CREATE)) &&
                             (fileName.endsWith(".properties") || fileName.endsWith(".txt") || fileName.endsWith(".ser")))
                         sim.addTrain(filePath+"\\"+fileName);
                 }

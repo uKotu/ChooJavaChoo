@@ -98,33 +98,38 @@ public class Train implements Runnable
                     }
 
                 }
-                case Normal -> {
-                    synchronized (Train.class)
-                    {
-                            try
+                case Normal ->
+                {
+
+                        try
+                        {
+                            Thread.sleep(((long)trainSpeed*1000));
+                            synchronized (Train.class)
                             {
-                                Thread.sleep(((long)trainSpeed*1000));
                                 move();
-                            } catch (Exception ex)
-                            {
-                                Main.logger.log(Level.SEVERE,ex.getMessage(),ex);
                             }
-                    }
+                        } catch (Exception ex)
+                        {
+                            Main.logger.log(Level.SEVERE,ex.getMessage(),ex);
+                        }
+
                 }
                 case ExitingParking ->
                 {
-                    synchronized (Train.class)
-                    {
+
                         try
                         {
                             Thread.sleep((long)trainSpeed*1000);
-                            exitParking();
+                            synchronized (Train.class)
+                            {
+                                exitParking();
+                            }
                         }
                         catch (Exception ex)
                         {
                             Main.logger.log(Level.SEVERE, ex.getMessage(), ex);
                         }
-                    }
+
 
                 }
             }
@@ -133,7 +138,7 @@ public class Train implements Runnable
     private synchronized void exitParking()
     {
         int newX, newY;
-        Locomotive trainHead = (Locomotive) parts.get(0);
+
         RailroadStation nextStation = null;
         for (var x: stations)
         {
@@ -156,43 +161,26 @@ public class Train implements Runnable
         var nextTile = nextTileValueEntry.getValue();
         newX = nextTile.getxCoordinate(); newY = nextTile.getyCoordinate();
 
-        if(trainPartsWhichHaveLeftThePlatform==0)
+
+
+        for (int i = trainPartsWhichHaveLeftThePlatform; i > 0; i--)
         {
-            var front = parts.getFirst();
-            front.setxCoordinate(newX); front.setyCoordinate(newY);
-            Platform.runLater(() -> map[front.getxCoordinate()][front.getyCoordinate()].putContent(front.toString()));
-            trainPartsWhichHaveLeftThePlatform++;
+            var front = parts.get(i-1);
+            var rear = parts.get(i);
+
+            //Platform.runLater(() -> map[rear.getxCoordinate()][rear.getyCoordinate()].putContent(""));
+            rear.setxCoordinate(front.getxCoordinate()); rear.setyCoordinate(front.getyCoordinate());
+            Platform.runLater(() -> map[rear.getxCoordinate()][rear.getyCoordinate()].putContent(rear.toString()));
         }
 
-        else
+        parts.getFirst().setxCoordinate(newX); parts.getFirst().setyCoordinate(newY);
+        Platform.runLater(() -> map[parts.getFirst().getxCoordinate()][parts.getFirst().getyCoordinate()].putContent(parts.getFirst().toString()));
+        trainPartsWhichHaveLeftThePlatform++;
+
+        if(trainPartsWhichHaveLeftThePlatform==parts.size())
         {
-            for (int i = 0; i < trainPartsWhichHaveLeftThePlatform; i--)
-            {
+            currentState = TrainState.Normal;
 
-                var front = parts.get(trainPartsWhichHaveLeftThePlatform - i - 1);
-                var rear = parts.get(trainPartsWhichHaveLeftThePlatform -i);
-
-
-                //clear the rear tile
-                Platform.runLater(() -> map[rear.getxCoordinate()][rear.getyCoordinate()].putContent(""));
-
-                //set taken to false;
-
-                rear.setxCoordinate(front.getxCoordinate());
-                rear.setyCoordinate(front.getyCoordinate());
-
-                front.setxCoordinate(newX);
-                front.setyCoordinate(newY);
-                Platform.runLater(() -> map[front.getxCoordinate()][front.getyCoordinate()].putContent(front.toString()));
-                Platform.runLater(() -> map[rear.getxCoordinate()][rear.getyCoordinate()].putContent(rear.toString()));
-                trainPartsWhichHaveLeftThePlatform++;
-                if(trainPartsWhichHaveLeftThePlatform==parts.size())
-                {
-                    currentState = TrainState.Normal;
-                    break;
-                }
-
-            }
         }
 
 
@@ -224,24 +212,30 @@ public class Train implements Runnable
         newX = nextTile.getxCoordinate(); newY = nextTile.getyCoordinate();
 
 
-        for(int i = parts.size();i>1;i--)
+        for (int i = parts.size()-1; i > 0; i--)
         {
-            var rear = parts.get(i-1);
-            var front = parts.get(i-2);
+            var front = parts.get(i-1);
+            var rear = parts.get(i);
 
-            //clear the rear tile
-            Platform.runLater(() ->
-                    {
-                        map[rear.getxCoordinate()][rear.getyCoordinate()].putContent("");
-                        map[front.getxCoordinate()][front.getyCoordinate()].putContent("");
-                    });
-            rear.setxCoordinate(front.getxCoordinate());
-            rear.setyCoordinate(front.getyCoordinate());
-            Platform.runLater(() -> map[rear.getxCoordinate()][rear.getyCoordinate()].putContent(rear.toString()));
+            int oldX, oldY;
+            //Platform.runLater(() -> map[rear.getxCoordinate()][rear.getyCoordinate()].putContent(""));
+            oldX= rear.getxCoordinate(); oldY = rear.getyCoordinate();
+            rear.setxCoordinate(front.getxCoordinate()); rear.setyCoordinate(front.getyCoordinate());
+
+            Platform.runLater(() -> map[oldX][oldY].putContent(""));
+            //Platform.runLater(() -> map[rear.getxCoordinate()][rear.getyCoordinate()].putContent(rear.toString()));
         }
         //move the train leading part to new coordinates
+
         var front = parts.get(0);
         front.setxCoordinate(newX); front.setyCoordinate(newY);
-        Platform.runLater(() -> map[front.getxCoordinate()][front.getyCoordinate()].putContent(front.toString()));
+        Platform.runLater(() ->
+        {
+            for(var x :parts)
+            {
+                map[x.getxCoordinate()][x.getyCoordinate()].putContent(x.toString());
+            }
+        });
+
     }
 }
