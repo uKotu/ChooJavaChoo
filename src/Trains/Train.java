@@ -78,7 +78,6 @@ public class Train implements Runnable
             return '!';
     }
 
-
     @Override
     public void run()
     {
@@ -133,7 +132,7 @@ public class Train implements Runnable
                         }
 
                 }
-                case EnteringParking -> //must restart number of parked parts, increment routePos
+                case EnteringParking ->
                 {
                     try
                     {
@@ -152,7 +151,17 @@ public class Train implements Runnable
             }
         }
     }
-    private synchronized  void enterParking()
+    /* movement logic
+
+    train acts like a caterpillar:
+    the last section takes the coordinates of the section in front of it,
+    and so on until we reach the head of the train
+
+    new location of the train leading part is calculated by using its adjacent train tracks
+    and moving it to the one whose distance is the closest to its next station
+     */
+
+    private synchronized void enterParking()
     {
         int newX, newY;
 
@@ -179,12 +188,7 @@ public class Train implements Runnable
             var front = parts.get(i-1);
             var rear = parts.get(i);
 
-            //int oldX, oldY;
-            //Platform.runLater(() -> map[rear.getxCoordinate()][rear.getyCoordinate()].putContent(""));
-           // oldX = rear.getxCoordinate(); oldY = rear.getyCoordinate();
             rear.setxCoordinate(front.getxCoordinate()); rear.setyCoordinate(front.getyCoordinate());
-
-            //Platform.runLater(() -> map[oldX][oldY].putContent(""));
         }
         Platform.runLater(() -> map[oldX][oldY].putContent(""));
 
@@ -192,6 +196,8 @@ public class Train implements Runnable
         front.setxCoordinate(newX); front.setyCoordinate(newY);
         trainPartsWhichHaveEnteredThePlatform++;
 
+        // entire train is parked, position it inside the new station
+        // and restart the parking counters
         if(trainPartsWhichHaveEnteredThePlatform == parts.size())
         {
             currentState = TrainState.Parked;
@@ -201,15 +207,16 @@ public class Train implements Runnable
             positionOnRoute++;
             currentStation=nextStation;
 
-            if(positionOnRoute+1 == route.length())//+1 because the train started at a certain location
+            if(positionOnRoute+1 == route.length())// +1 because the train started at a certain location
                 trainAlive = false;
             return;
         }
+
         Platform.runLater(() ->
         {
             for(int i = 0; i < parts.size()-trainPartsWhichHaveEnteredThePlatform;i++)
             {
-                //draw all trainparts
+                //draw all train parts which have not entered the platform
                 map[parts.get(parts.size()-1-i).getxCoordinate()][parts.get(parts.size()-1-i).getyCoordinate()].putContent(parts.get(parts.size()-1-i).toString());
             }
         });
@@ -248,7 +255,8 @@ public class Train implements Runnable
             var front = parts.get(i-1);
             var rear = parts.get(i);
 
-            //Platform.runLater(() -> map[rear.getxCoordinate()][rear.getyCoordinate()].putContent(""));
+            //zasto ovo nije radilo
+            // Platform.runLater(() -> map[rear.getxCoordinate()][rear.getyCoordinate()].putContent(""));
             rear.setxCoordinate(front.getxCoordinate()); rear.setyCoordinate(front.getyCoordinate());
             Platform.runLater(() -> map[rear.getxCoordinate()][rear.getyCoordinate()].putContent(rear.toString()));
         }
@@ -263,12 +271,10 @@ public class Train implements Runnable
 
         }
 
-
     }
     private synchronized void move()
     {
         int newX, newY;
-        Locomotive trainHead = (Locomotive) parts.get(0);
         RailroadStation nextStation = null;
         for (var x: stations)
         {
@@ -325,13 +331,12 @@ public class Train implements Runnable
         {
             for(var x :parts)
             {
-                //draw all trainparts
+                //draw all train parts
                 map[x.getxCoordinate()][x.getyCoordinate()].putContent(x.toString());
             }
         });
 
     }
-
     public int getTrainHeadXCoordinate()
     {
         return parts.get(0).getxCoordinate();
