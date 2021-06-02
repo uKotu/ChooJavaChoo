@@ -1,8 +1,9 @@
 package Tiles;
 
+import Trains.Train;
 import javafx.scene.paint.Color;
 
-public class StationTile extends Tile
+public class StationTile extends Tile implements TrainPassable
 {
     Color stationColor = Color.ORANGE;
 

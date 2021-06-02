@@ -2,11 +2,7 @@ package FXML;
 
 import Tiles.*;
 import Util.RailPath;
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.layout.GridPane;
 
 import java.util.LinkedList;
@@ -248,17 +244,15 @@ public class MapController
                 addTile(r, i, j);
                 CE.addTile(r);
             }
-            railPaths.add(AB); railPaths.add(BC); railPaths.add(CE);
-            railPaths.add(CD);
+            railPaths.add(AB); railPaths.add(BC); railPaths.add(CE); railPaths.add(CD);
         }
-
-
     }
+
     public void addTile(Tile r, int x, int y)
     {
         pane.getChildren().remove(playField[x][y]);
         pane.add(r, x, y);
-        r.getTextProperty().addListener((observableValue, s, t1) -> updateGridPane(playField));
+        r.getTextProperty().addListener((observableValue, s, t1) -> updateGridPane());
         playField[x][y] = r;
     }
 
@@ -282,7 +276,7 @@ public class MapController
         return playField;
     }
 
-    public void updateGridPane(Tile[][] updatedMatrix)
+    public void updateGridPane()
     {
 
             for (int i = 0; i < spots; i++)

@@ -2,7 +2,7 @@ package Trains;
 
 public enum TrainState
 {
-    BeingParked,
+    EnteringParking,
     Parked,
     ExitingParking,
     Normal

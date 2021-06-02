@@ -1,11 +1,11 @@
 package Util;
 
 import Tiles.StationTile;
+import Tiles.Tile;
 import Tiles.TrainTrack;
 import Trains.Train;
 
-import java.util.ArrayDeque;
-import java.util.LinkedList;
+import java.util.*;
 
 public class RailroadStation
 {
@@ -33,13 +33,13 @@ public class RailroadStation
         Train nextTrain = trainQueue.peek();
         for(var x : railPaths)
         {
-
                 if (x.stationsConnected.contains(nextTrain.nextStationName() + ""))
                 {
                     synchronized (Train.class)
                     {
                         if (x.isPathClear()) //|| x.trainIsMovingAway()
                         {
+                            trainQueue.removeFirst();
                             return true;
                         }
                     }
@@ -61,12 +61,27 @@ public class RailroadStation
         return possibleExitCoordinates;
     }
 
+
     public String getName() {
         return name;
     }
     public void addTrainToQueue(Train train)
     {
         this.trainQueue.add(train);
+    }
+
+    public Tile findClosestEntrance(Train train)
+    {
+        HashMap<Integer, Tile> tileDistanceMap = new HashMap<>();
+        for (var track : tilesTaken)
+        {
+            int distance = Coordinates.calculateDistance(
+                    new Coordinates(track.getxCoordinate(),track.getyCoordinate()),
+                    new Coordinates(train.getTrainHeadXCoordinate(), train.getTrainHeadYCoordinate()));
+            tileDistanceMap.put(distance,track);
+        }
+        var nextTileValueEntry = Collections.min(tileDistanceMap.entrySet(), Map.Entry.comparingByKey());
+        return nextTileValueEntry.getValue();
     }
 
 }

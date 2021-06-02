@@ -77,9 +77,9 @@ public  class Simulation
             Train newTrain = new Train(trainParts,trainSpeed,trainRoute,map,stations);
             trains.add(newTrain);
 
-            Thread tren = new Thread(newTrain);
-            tren.start();
-           // newTrain.; //run
+            Thread newlyCreatedTrainThread = new Thread(newTrain);
+            newlyCreatedTrainThread.start();
+
 
         }
         catch (Exception ex)
@@ -90,10 +90,10 @@ public  class Simulation
     private void initializeRailroadStations()
     {
         
-        StationTile a1 = new StationTile("A",1,27,mapController.getTileHeight(), mapController.getTileHeight());
-        StationTile a2 = new StationTile("A",1,28,mapController.getTileHeight(), mapController.getTileHeight());
-        StationTile a3 = new StationTile("A",2,28,mapController.getTileHeight(), mapController.getTileHeight());
-        StationTile a4 = new StationTile("A",2,27,mapController.getTileHeight(), mapController.getTileHeight());
+        StationTile a1 = new StationTile("A",1,27,mapController.getTileHeight(), mapController.getTileWidth());
+        StationTile a2 = new StationTile("A",1,28,mapController.getTileHeight(), mapController.getTileWidth());
+        StationTile a3 = new StationTile("A",2,28,mapController.getTileHeight(), mapController.getTileWidth());
+        StationTile a4 = new StationTile("A",2,27,mapController.getTileHeight(), mapController.getTileWidth());
 
         mapController.addTile(a1,1,27);
         mapController.addTile(a2,1,28);
@@ -113,10 +113,10 @@ public  class Simulation
         }
         stations.add(stationA);
 
-        StationTile b1 = new StationTile("B",8,6,mapController.getTileHeight(), mapController.getTileHeight());
-        StationTile b2 = new StationTile("B",8,5,mapController.getTileHeight(), mapController.getTileHeight());
-        StationTile b3 = new StationTile("B",7,6,mapController.getTileHeight(), mapController.getTileHeight());
-        StationTile b4 = new StationTile("B",7,5,mapController.getTileHeight(), mapController.getTileHeight());
+        StationTile b1 = new StationTile("B",8,6,mapController.getTileHeight(), mapController.getTileWidth());
+        StationTile b2 = new StationTile("B",8,5,mapController.getTileHeight(), mapController.getTileWidth());
+        StationTile b3 = new StationTile("B",7,6,mapController.getTileHeight(), mapController.getTileWidth());
+        StationTile b4 = new StationTile("B",7,5,mapController.getTileHeight(), mapController.getTileWidth());
         mapController.addTile(b1,8,6);
         mapController.addTile(b2,8,5);
         mapController.addTile(b3,7,6);
@@ -126,7 +126,7 @@ public  class Simulation
         LinkedList<StationTile> stationBTiles = new LinkedList<>();
         stationBTiles.add(b1); stationBTiles.add(b2); stationBTiles.add(b3); stationBTiles.add(b4);
         LinkedList<TrainTrack> stationBExits = new LinkedList<>();
-        stationBExits.add((TrainTrack) map[6][7]); stationBExits.add((TrainTrack) map[9][7]);
+        stationBExits.add((TrainTrack) map[6][6]); stationBExits.add((TrainTrack) map[9][6]);
 
         RailroadStation stationB = new RailroadStation("B",stationBTiles, stationBExits);
         for(var x : mapController.getRailPaths())
@@ -136,10 +136,10 @@ public  class Simulation
         }
         stations.add(stationB);
 
-        StationTile c1 = new StationTile("C",20,12,mapController.getTileHeight(), mapController.getTileHeight());
-        StationTile c2 = new StationTile("C",20,13,mapController.getTileHeight(), mapController.getTileHeight());
-        StationTile c3 = new StationTile("C",19,12,mapController.getTileHeight(), mapController.getTileHeight());
-        StationTile c4 = new StationTile("C",19,13,mapController.getTileHeight(), mapController.getTileHeight());
+        StationTile c1 = new StationTile("C",20,12,mapController.getTileHeight(), mapController.getTileWidth());
+        StationTile c2 = new StationTile("C",20,13,mapController.getTileHeight(), mapController.getTileWidth());
+        StationTile c3 = new StationTile("C",19,12,mapController.getTileHeight(), mapController.getTileWidth());
+        StationTile c4 = new StationTile("C",19,13,mapController.getTileHeight(), mapController.getTileWidth());
         mapController.addTile(c1,20,12);
         mapController.addTile(c2,20,13);
         mapController.addTile(c3,19,12);
@@ -158,10 +158,10 @@ public  class Simulation
         }
         stations.add(stationC);
 
-        StationTile d1 = new StationTile("D",27,1,mapController.getTileHeight(), mapController.getTileHeight());
-        StationTile d2 = new StationTile("D",27,2,mapController.getTileHeight(), mapController.getTileHeight());
-        StationTile d3 = new StationTile("D",26,2,mapController.getTileHeight(), mapController.getTileHeight());
-        StationTile d4 = new StationTile("D",26,1,mapController.getTileHeight(), mapController.getTileHeight());
+        StationTile d1 = new StationTile("D",27,1,mapController.getTileHeight(), mapController.getTileWidth());
+        StationTile d2 = new StationTile("D",27,2,mapController.getTileHeight(), mapController.getTileWidth());
+        StationTile d3 = new StationTile("D",26,2,mapController.getTileHeight(), mapController.getTileWidth());
+        StationTile d4 = new StationTile("D",26,1,mapController.getTileHeight(), mapController.getTileWidth());
         mapController.addTile(d1,26,1);
         mapController.addTile(d2,26,2);
         mapController.addTile(d3,27,2);
@@ -180,10 +180,10 @@ public  class Simulation
         }
         stations.add(stationD);
 
-        StationTile e1 = new StationTile("E",26,26,mapController.getTileHeight(), mapController.getTileHeight());
-        StationTile e2 = new StationTile("E",25,26,mapController.getTileHeight(), mapController.getTileHeight());
-        StationTile e3 = new StationTile("E",26,25,mapController.getTileHeight(), mapController.getTileHeight());
-        StationTile e4 = new StationTile("E",25,25,mapController.getTileHeight(), mapController.getTileHeight());
+        StationTile e1 = new StationTile("E",26,26,mapController.getTileHeight(), mapController.getTileWidth());
+        StationTile e2 = new StationTile("E",25,26,mapController.getTileHeight(), mapController.getTileWidth());
+        StationTile e3 = new StationTile("E",26,25,mapController.getTileHeight(), mapController.getTileWidth());
+        StationTile e4 = new StationTile("E",25,25,mapController.getTileHeight(), mapController.getTileWidth());
         mapController.addTile(e1,26,25);
         mapController.addTile(e2,26,26);
         mapController.addTile(e3,25,25);
@@ -213,9 +213,8 @@ public  class Simulation
             //start filewatcher
             Watcher trainWatcher = new Watcher(trainFolder, this.getClass().getDeclaredMethod("addTrain",String.class),this);
             trainWatcher.start();
-
-
             //create trains/cars
+
             //start trains
             //start carts
         }
