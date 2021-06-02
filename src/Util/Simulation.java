@@ -80,7 +80,6 @@ public  class Simulation
             Thread newlyCreatedTrainThread = new Thread(newTrain);
             newlyCreatedTrainThread.start();
 
-
         }
         catch (Exception ex)
         {
@@ -192,8 +191,8 @@ public  class Simulation
         LinkedList<StationTile> stationETiles = new LinkedList<>();
         stationETiles.add(e1); stationETiles.add(e2); stationETiles.add(e3); stationETiles.add(e4);
         LinkedList<TrainTrack> stationEExits = new LinkedList<>();
-        stationEExits.add((TrainTrack) map[25][27]); stationEExits.add((TrainTrack) map[26][24]);
-
+        stationEExits.add((TrainTrack) map[27][25]); stationEExits.add((TrainTrack) map[26][24]);
+        //[26][24]          [27][25]
         RailroadStation stationE = new RailroadStation("E",stationETiles, stationEExits);
         for(var x : mapController.getRailPaths())
         {

@@ -15,15 +15,15 @@ import java.util.logging.Level;
 public class Train implements Runnable
 {
     LinkedList<Connectable> parts;
-    double trainSpeed;
-    String route;
-    int positionOnRoute;
-    RailroadStation currentStation;
-    TrainState currentState;
-    Tile[][] map;
-    LinkedList<RailroadStation> stations;
-    boolean trainAlive;
-    int trainPartsWhichHaveLeftThePlatform, trainPartsWhichHaveEnteredThePlatform;
+    private final double trainSpeed;
+    private final String route;
+    private int positionOnRoute;
+    private RailroadStation currentStation;
+    private TrainState currentState;
+    private Tile[][] map;
+    private final LinkedList<RailroadStation> stations;
+    private boolean trainAlive;
+    private int trainPartsWhichHaveLeftThePlatform, trainPartsWhichHaveEnteredThePlatform;
 
     public Train(LinkedList<Connectable> trainPieces, double trainSpeed, String route, Tile[][] map, LinkedList<RailroadStation> stations)
     {
@@ -49,26 +49,36 @@ public class Train implements Runnable
         }
     }
 
-    private List<TrainTrack> getAdjacentFreeTracks()
+    private LinkedList<TrainTrack> getAdjacentFreeTracks()
     {
         LinkedList<TrainTrack> adjacentTracks = new LinkedList<>();
         Locomotive trainHead = (Locomotive) parts.get(0); //first part of the train must be a locomotive
-        if (currentState==TrainState.Parked || this.trainPartsWhichHaveLeftThePlatform==0) //if the train is parked, its adjacent tracks are the stations exitTracks
+        if (currentState==TrainState.Parked || this.trainPartsWhichHaveLeftThePlatform==0)
+        {
+            //if the train is parked or is just starting to move,
+            // its adjacent tracks are the current stations exitTracks
             return currentStation.getPossibleExitCoordinates();
+        }
         else
-            if(map[trainHead.getxCoordinate() + 1 ][trainHead.getyCoordinate()] instanceof TrainPassable && !map[trainHead.getxCoordinate() + 1 ][trainHead.getyCoordinate()].isTaken())
-                adjacentTracks.add((TrainTrack) map[trainHead.getxCoordinate() + 1 ][trainHead.getyCoordinate()]);
-            if(map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1] instanceof TrainPassable && !map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1].isTaken())
-                adjacentTracks.add((TrainTrack)map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1]);
-            if(map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()] instanceof TrainPassable && !map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()].isTaken())
-                adjacentTracks.add((TrainTrack)map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()]);
-            if(map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1] instanceof TrainPassable && !map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1].isTaken())
-                adjacentTracks.add((TrainTrack)map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1]);
+        {
+            if (map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()] instanceof TrainPassable
+                    && !map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()].isTaken())
+                adjacentTracks.add((TrainTrack) map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()]);
 
+            if (map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1] instanceof TrainPassable
+                    && !map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1].isTaken())
+                adjacentTracks.add((TrainTrack) map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1]);
+
+            if (map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()] instanceof TrainPassable
+                    && !map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()].isTaken())
+                adjacentTracks.add((TrainTrack) map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()]);
+
+            if (map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1] instanceof TrainPassable
+                    && !map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1].isTaken())
+                adjacentTracks.add((TrainTrack) map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1]);
+        }
             return adjacentTracks;
     }
-
-
 
     public char nextStationName() throws ArrayIndexOutOfBoundsException
     {
