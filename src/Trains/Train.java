@@ -1,6 +1,7 @@
 package Trains;
 
 import Main.Main;
+import Tiles.StationTile;
 import Tiles.Tile;
 import Tiles.TrainPassable;
 import Tiles.TrainTrack;
@@ -78,6 +79,47 @@ public class Train implements Runnable
                 adjacentTracks.add((TrainTrack) map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1]);
         }
             return adjacentTracks;
+    }
+
+    private boolean stuckInTraffic()
+    {
+        LinkedList<Tile> adjacentTakenTracks = new LinkedList<>();
+        Locomotive trainHead = (Locomotive) parts.get(0); //first part of the train must be a locomotive
+
+        if (!(map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()] instanceof StationTile)
+                && map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()] !=null
+                && map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()].isTaken())
+            adjacentTakenTracks.add(map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()]);
+
+        if (!(map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1] instanceof StationTile)
+                && map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1] != null
+                && map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1].isTaken())
+            adjacentTakenTracks.add(map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1]);
+
+        if (!(map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()] instanceof StationTile)
+                && map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()] != null
+                && map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()].isTaken())
+            adjacentTakenTracks.add(map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()]);
+
+        if (!(map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1] instanceof StationTile)
+                && map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1] != null
+                && map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1].isTaken())
+            adjacentTakenTracks.add(map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1]);
+
+        int numberOfHits = 0;
+        for(var track: adjacentTakenTracks)
+        {
+            for(var part: parts)
+            {
+
+                if (track.getContent().equals(part.toString()))
+                {
+                    numberOfHits++;
+                }
+
+            }
+        }
+        return !(numberOfHits==adjacentTakenTracks.size());
     }
 
     public char nextStationName() throws ArrayIndexOutOfBoundsException
@@ -248,12 +290,19 @@ public class Train implements Runnable
         }
 
         HashMap<Integer,Tile> tileDistanceMap = new HashMap<>();
+        //sort zero aka wait
         for (var track : getAdjacentFreeTracks())
         {
             int distance = Coordinates.calculateDistance(
                     new Coordinates(track.getxCoordinate(),track.getyCoordinate()),
                     new Coordinates(nextStation.getxCoordinate(), nextStation.getyCoordinate()));
             tileDistanceMap.put(distance,track);
+        }
+        if (tileDistanceMap.size()==0)
+        {
+            //if there are no empty tracks to move the train to
+            //slow down, aka wait
+            return;
         }
         var nextTileValueEntry = Collections.min(tileDistanceMap.entrySet(), Map.Entry.comparingByKey());
         var nextTile = nextTileValueEntry.getValue();
@@ -299,6 +348,11 @@ public class Train implements Runnable
         var freeAdjacentTracks = getAdjacentFreeTracks();
         if(freeAdjacentTracks.size()==0)
         {
+            if(stuckInTraffic())
+            {
+                return;
+            }
+            //ako je iduca susjedna voz, onda sjeb!!!!!!!!!!!!!!!! fixD?
             currentState = TrainState.EnteringParking;
             return;
         }

@@ -28,55 +28,81 @@ public class MapController
         ////////car tracks///
         {
             //left bottom corner cartrack
-            for (int i = 20; i <= 21; i++)
-            {
-                for (int j = 0; j < 7; j++)
-                {
-                    CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight);
 
-                    addTile(r,j,i);
-                }
+            for (int i=20, j = 0; j < 7; j++)
+            {
+                CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
+
+                addTile(r,j,i);
             }
-            for (int i = 7; i <= 8; i++)
-            {
-                for (int j = 20; j < 30; j++)
-                {
-                    CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight);
 
-                    addTile(r,i,j);
-                }
+            for (int i=21, j = 0; j < 7; j++)
+            {
+                CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
+
+                addTile(r,j,i);
+            }
+
+            for (int i = 8, j = 20; j < 30; j++)
+            {
+                CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
+
+                addTile(r,i,j);
+            }
+
+            for (int i = 7, j = 20; j < 30; j++)
+            {
+                CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
+
+                addTile(r,i,j);
             }
 
             //middle cartrack
-            for (int i = 13; i <= 14; i++)
-            {
-                for (int j = 0; j < 30; j++)
-                {
-                    CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight);
 
-                    addTile(r,i,j);
-                }
+            for (int i = 14, j = 0; j < 30; j++)
+            {
+                CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
+
+                addTile(r,i,j);
             }
 
+            for (int i=13, j = 0; j < 30; j++)
+            {
+                CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
+
+                addTile(r, i, j);
+            }
             //right bottom corner cartrack
-            for (int i = 21; i <= 22; i++)
-            {
-                for (int j = 20; j < 30; j++)
-                {
-                    CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight);
 
-                    addTile(r,i,j);
-                }
-            }
-            for (int i = 21; i < 30; i++)
+            for (int i=21, j = 20; j < 30; j++)
             {
-                for (int j = 20; j <= 21; j++)
-                {
-                    CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight);
+                CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
 
-                    addTile(r,i,j);
-                }
+                addTile(r,i,j);
             }
+
+            for (int i=22, j = 20; j < 30; j++)
+            {
+                CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
+
+                addTile(r,i,j);
+            }
+
+
+            for (int i = 21, j = 21; i < 30; i++)
+            {
+                CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
+
+                addTile(r,i,j);
+            }
+
+            for (int i = 21,j = 20; i < 30; i++)
+            {
+                CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
+
+                addTile(r,i,j);
+            }
+
         }
 
         RailPath AB = new RailPath("AB");
@@ -223,27 +249,51 @@ public class MapController
 
         ////////railwayX/////
         {
-            for (int i = 2, j = 20; j <= 21; j++)
+            //left crossing
+            RailwayCrossing leftX1 = new RailwayCrossing("", 2, 20, tileWidth, tileHeight,MovementSide.LEFT);
+            addTile(leftX1, 2, 20);
+            AB.addTile(leftX1);
+
+            RailwayCrossing leftX2 = new RailwayCrossing("", 2, 21, tileWidth, tileHeight,MovementSide.RIGHT);
+            addTile(leftX2, 2, 21);
+            AB.addTile(leftX2);
+
+            /*for (int i = 2, j = 20; j <= 21; j++)
             {
                 RailwayCrossing r = new RailwayCrossing("", i, j, tileWidth, tileHeight);
 
                 addTile(r, i, j);
                 AB.addTile(r);
-            }
+            }*/
+            RailwayCrossing midX1 = new RailwayCrossing("", 13, 6, tileWidth, tileHeight,MovementSide.LEFT);
+            addTile(midX1, 13, 6);
+            BC.addTile(midX1);
+
+            RailwayCrossing midX2 = new RailwayCrossing("", 14, 6, tileWidth, tileHeight,MovementSide.RIGHT);
+            addTile(midX2, 14, 6);
+            BC.addTile(midX2);/*
             for (int i = 13, j = 6; i <= 14; i++)
             {
                 RailwayCrossing r = new RailwayCrossing("", i, j, tileWidth, tileHeight);
 
                 addTile(r, i, j);
                 BC.addTile(r);
-            }
+            }*/
+            RailwayCrossing rightX1 = new RailwayCrossing("", 26, 20, tileWidth, tileHeight,MovementSide.LEFT);
+            addTile(rightX1, 26, 20);
+            CE.addTile(rightX1);
+
+            RailwayCrossing rightX2 = new RailwayCrossing("", 26, 21, tileWidth, tileHeight,MovementSide.RIGHT);
+            addTile(rightX2, 26, 21);
+            CE.addTile(rightX2);
+            /*
             for (int i = 26, j = 20; j <= 21; j++)
             {
                 RailwayCrossing r = new RailwayCrossing("", i, j, tileWidth, tileHeight);
 
                 addTile(r, i, j);
                 CE.addTile(r);
-            }
+            }*/
             railPaths.add(AB); railPaths.add(BC); railPaths.add(CE); railPaths.add(CD);
         }
     }

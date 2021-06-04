@@ -13,7 +13,7 @@ public class Watcher extends Thread
     private Method updateMethod;
     private Simulation sim;
 
-    public Watcher(String filePath, Method updateMethod, Simulation sim)
+    public Watcher(String filePath, Method updateMethod, Simulation sim)//, StandardWatchEventKinds watchEventKind)
     {
         this.filePath=filePath;
         this.updateMethod=updateMethod;

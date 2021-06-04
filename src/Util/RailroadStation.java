@@ -9,19 +9,22 @@ import java.util.*;
 
 public class RailroadStation
 {
-    LinkedList<StationTile> tilesTaken;
-    ArrayDeque<Train> trainQueue;
-    LinkedList<TrainTrack> possibleExitCoordinates;
+    private final LinkedList<StationTile> tilesTaken;
+    private ArrayDeque<Train> trainQueue;
+    private final LinkedList<TrainTrack> possibleExitCoordinates;
     LinkedList<RailPath> railPaths;
-    String name;
+    private final String name;
+    private LinkedList<Train> trains;
 
-    RailroadStation(String name, LinkedList<StationTile> tilesTaken, LinkedList<TrainTrack> possibleExitCoordinates)
+
+    RailroadStation(String name, LinkedList<StationTile> tilesTaken, LinkedList<TrainTrack> possibleExitCoordinates, LinkedList<Train> trains)
     {
         this.name = name;
         this.tilesTaken = tilesTaken;
         this.possibleExitCoordinates = possibleExitCoordinates;
         this.trainQueue = new ArrayDeque<>();
         this.railPaths = new LinkedList<>();
+        this.trains = trains;
 
     }
     public boolean nextInQueue(Train train)
@@ -37,7 +40,7 @@ public class RailroadStation
                 {
                     synchronized (Train.class)
                     {
-                        if (x.isPathClear()) //|| x.trainIsMovingAway()
+                        if (x.isPathClear() || noIncomingTrainsOnTheRailPath(x)) //|| x.trainIsMovingAway()
                         {
                             trainQueue.removeFirst();
                             return true;
@@ -46,6 +49,26 @@ public class RailroadStation
                 }
         }
         return false;
+    }
+    private boolean noIncomingTrainsOnTheRailPath(RailPath railPath)
+    {
+        //check all trains which are on the railpath for their next station
+        //if their next station is the current station, there is an incoming train
+        for(Train train: trains)
+        {
+            for(Tile tile:railPath.tilesOnPath)
+            {
+                if(tile.getxCoordinate()==train.getTrainHeadXCoordinate() && tile.getyCoordinate()==train.getTrainHeadYCoordinate())
+                {
+                    if((train.nextStationName()+"").equals(this.name))
+                    {
+                        return false;
+                    }
+                }
+
+            }
+        }
+        return true;
     }
     public int getxCoordinate()
     {

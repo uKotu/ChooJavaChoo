@@ -104,7 +104,7 @@ public  class Simulation
         LinkedList<TrainTrack> stationAExits = new LinkedList<>();
         stationAExits.add((TrainTrack) map[2][29]); stationAExits.add((TrainTrack) map[2][26]);
 
-        RailroadStation stationA = new RailroadStation("A",stationATiles, stationAExits);
+        RailroadStation stationA = new RailroadStation("A",stationATiles, stationAExits, trains);
         for(var x : mapController.getRailPaths())
         {
             if(x.stationsConnected.contains("A"))
@@ -127,7 +127,7 @@ public  class Simulation
         LinkedList<TrainTrack> stationBExits = new LinkedList<>();
         stationBExits.add((TrainTrack) map[6][6]); stationBExits.add((TrainTrack) map[9][6]);
 
-        RailroadStation stationB = new RailroadStation("B",stationBTiles, stationBExits);
+        RailroadStation stationB = new RailroadStation("B",stationBTiles, stationBExits, trains);
         for(var x : mapController.getRailPaths())
         {
             if(x.stationsConnected.contains("B"))
@@ -149,7 +149,7 @@ public  class Simulation
         LinkedList<TrainTrack> stationCExits = new LinkedList<>();
         stationCExits.add((TrainTrack) map[19][11]); stationCExits.add((TrainTrack) map[21][12]); stationCExits.add((TrainTrack)map[20][14]);
 
-        RailroadStation stationC = new RailroadStation("C",stationCTiles, stationCExits);
+        RailroadStation stationC = new RailroadStation("C",stationCTiles, stationCExits, trains);
         for(var x : mapController.getRailPaths())
         {
             if(x.stationsConnected.contains("C"))
@@ -171,7 +171,7 @@ public  class Simulation
         LinkedList<TrainTrack> stationDExits = new LinkedList<>();
         stationDExits.add((TrainTrack) map[25][1]);
 
-        RailroadStation stationD = new RailroadStation("D",stationDTiles, stationDExits);
+        RailroadStation stationD = new RailroadStation("D",stationDTiles, stationDExits, trains);
         for(var x : mapController.getRailPaths())
         {
             if(x.stationsConnected.contains("D"))
@@ -193,7 +193,7 @@ public  class Simulation
         LinkedList<TrainTrack> stationEExits = new LinkedList<>();
         stationEExits.add((TrainTrack) map[27][25]); stationEExits.add((TrainTrack) map[26][24]);
         //[26][24]          [27][25]
-        RailroadStation stationE = new RailroadStation("E",stationETiles, stationEExits);
+        RailroadStation stationE = new RailroadStation("E",stationETiles, stationEExits, trains);
         for(var x : mapController.getRailPaths())
         {
             if(x.stationsConnected.contains("E"))

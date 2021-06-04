@@ -49,6 +49,8 @@ public abstract class Tile extends StackPane
         this.label.setText(temp);
     }
 
+    public String getContent() { return this.label.getText();}
+
     public int getxCoordinate()
     {
         return columnNumber;
@@ -58,4 +60,6 @@ public abstract class Tile extends StackPane
     {
         return rowNumber;
     }
+
+
 }
