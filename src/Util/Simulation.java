@@ -11,7 +11,10 @@ import Trains.TrainBuilder;
 
 
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
+import java.lang.reflect.InaccessibleObjectException;
 import java.nio.file.*;
 import java.util.LinkedList;
 import java.util.logging.Level;
@@ -20,13 +23,16 @@ import static java.nio.file.StandardWatchEventKinds.*;
 
 public  class Simulation
 {
-    private final static String trainFolder = "C:\\Users\\Lenovo\\IdeaProjects\\ChooJavaChoo\\Trainspotting";
-    private final static String carFolder = "";
+    private final static String configFile = "C:\\Users\\Lenovo\\IdeaProjects\\ChooJavaChoo\\config.cfg";
+    private static String trainFolder = "C:\\Users\\Lenovo\\IdeaProjects\\ChooJavaChoo\\Trainspotting";
+    private static String movementFolder = "";
 
-    LinkedList<Train> trains;
-    LinkedList<RailroadStation> stations;
-    Tile[][] map;
-    MapController mapController;
+    private LinkedList<Train> trains;
+    private LinkedList<RailroadStation> stations;
+    private Tile[][] map;
+    private final MapController mapController;
+    private int carCountTrack1, carCountTrack2, carCountTrack3;
+    private int track1SpeedLimit, track2SpeedLimit, track3SpeedLimit;
 
     public Simulation(MapController controller)
     {
@@ -202,16 +208,61 @@ public  class Simulation
         stations.add(stationE);
 
     }
+
+    private boolean configReader()
+    {
+        BufferedReader reader;
+        try
+        {
+            reader = new BufferedReader(new FileReader(configFile));
+
+            String readLine = reader.readLine(); //Left/1-Middle/2-Right/3
+            String[] carTrackCount = readLine.split("-");
+            if(carTrackCount.length>=3)
+            {
+                carCountTrack1 = Integer.parseInt(carTrackCount[0]);
+                carCountTrack2 = Integer.parseInt(carTrackCount[1]);
+                carCountTrack3 = Integer.parseInt(carTrackCount[2]);
+            }
+            readLine = reader.readLine(); //speed1-speed2-speed3
+            String[] speedPerTrack = readLine.split("-");
+            {
+                if(speedPerTrack.length>=3)
+                {
+                    track1SpeedLimit = Integer.parseInt(speedPerTrack[0]);
+                    track2SpeedLimit = Integer.parseInt(speedPerTrack[1]);
+                    track3SpeedLimit = Integer.parseInt(speedPerTrack[2]);
+                }
+            }
+            trainFolder = reader.readLine();//trainFolder
+            movementFolder = reader.readLine();
+
+            return Files.isDirectory(Path.of(trainFolder)) && Files.isDirectory(Path.of(movementFolder));
+            //success while reading config file
+
+
+        }
+        catch (Exception ex)
+        {
+            Main.logger.log(Level.SEVERE,ex.getMessage(),ex);
+            return false;
+        }
+
+    }
+
     public void start()
     {
         try
         {
+            if(!configReader())
+                throw new InaccessibleObjectException("Reading config file failed!");
             //create railroad stations
             initializeRailroadStations();
 
             //start filewatcher
             Watcher trainWatcher = new Watcher(trainFolder, this.getClass().getDeclaredMethod("addTrain",String.class),this);
             trainWatcher.start();
+
             //create trains/cars
 
             //start trains
@@ -220,6 +271,8 @@ public  class Simulation
         catch (Exception ex)
         {
             Main.logger.log(Level.SEVERE,ex.getMessage(),ex);
+            if(ex instanceof InaccessibleObjectException)
+                System.exit(-1);
         }
     }
 
