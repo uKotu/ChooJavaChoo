@@ -29,7 +29,6 @@ public class MapController
         {
             //left bottom corner cartrack
 
-            //TODO left and right corner catracks are not set properly
             for (int i = 0, j = 20; i <= 8; i++)
             {
                 CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
@@ -51,7 +50,7 @@ public class MapController
                 addTile(r,i,j);
             }
 
-            for (int i = 7, j = 20; j < 30; j++)
+            for (int i = 7, j = 21; j < 30; j++)
             {
                 CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
 
@@ -82,15 +81,14 @@ public class MapController
                 addTile(r,i,j);
             }
 
-            for (int i=22, j = 20; j < 30; j++)
+            for (int i=22, j = 21; j < 30; j++)
             {
                 CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
 
                 addTile(r,i,j);
             }
 
-
-            for (int i = 21, j = 21; i < 30; i++)
+            for (int i = 22, j = 21; i < 30; i++)
             {
                 CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
 

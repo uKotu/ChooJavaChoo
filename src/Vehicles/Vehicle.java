@@ -19,6 +19,7 @@ public abstract class Vehicle implements Runnable
     private Tile[][] map;
     protected final int VehicleID;
     private int xCoordinate, yCoordinate;
+    private LinkedList<Tile> pastLocations;
 
     volatile double speed;
     private boolean isAlive;
@@ -37,6 +38,7 @@ public abstract class Vehicle implements Runnable
         this.xCoordinate = currentPosition.getxCoordinate();
         this.yCoordinate = currentPosition.getyCoordinate();
         speed = 1;
+        pastLocations = new LinkedList<>();
 
 
     }
@@ -49,46 +51,54 @@ public abstract class Vehicle implements Runnable
 
     private LinkedList<CarPassable> getAdjacentTracks()
     {
-        LinkedList<CarPassable> adjacentTracks = new LinkedList<>();
-
-        int upperX = currentPosition.getxCoordinate() ; int upperY = currentPosition.getyCoordinate() + 1;
-        if((upperX>=0 && upperX<30) && (upperY>=0 && upperY<30))
+        LinkedList<CarPassable> adjacentTracks;
+        synchronized (map)
         {
-            if (map[upperX][upperY] instanceof CarPassable
-                    && (((CarPassable) map[upperX][upperY]).getMovementSide() == this.getMovementSide())
-                    && !map[upperX][upperY].isTaken())
-                adjacentTracks.add((CarPassable) map[upperX][upperY]);
-        }
+            adjacentTracks = new LinkedList<>();
 
-        int rightX = currentPosition.getxCoordinate() + 1 ; int rightY = currentPosition.getyCoordinate();
-        if((rightX>=0 && rightX<30) && (rightY>=0 && rightY<30))
-        {
-            if (map[rightX][rightY] instanceof CarPassable
-                    && (((CarPassable)map[rightX][rightY]).getMovementSide() == this.getMovementSide())
-                    && !map[rightX][rightY].isTaken())
-                adjacentTracks.add((CarPassable) map[rightX][rightY]);
-        }
+            int upperX = currentPosition.getxCoordinate();
+            int upperY = currentPosition.getyCoordinate() + 1;
+            if ((upperX >= 0 && upperX < 30) && (upperY >= 0 && upperY < 30))
+            {
+                if (map[upperX][upperY] instanceof CarPassable
+                        && (((CarPassable) map[upperX][upperY]).getMovementSide() == this.getMovementSide())
+                        && !map[upperX][upperY].isTaken() && !pastLocations.contains(map[upperX][upperY]))
+                    adjacentTracks.add((CarPassable) map[upperX][upperY]);
+            }
 
-        int leftX = currentPosition.getxCoordinate() - 1; int leftY = currentPosition.getyCoordinate();
-        if((leftX>=0 && leftX<30) && (leftX>=0 && leftY<30))
-        {
-            if (map[leftX][leftY] instanceof CarPassable
-                    && (((CarPassable)map[leftX][leftY]).getMovementSide() == this.getMovementSide())
-                    && !map[leftX][leftY].isTaken())
-                adjacentTracks.add((CarPassable) map[leftX][leftY]);
-        }
+            int rightX = currentPosition.getxCoordinate() + 1;
+            int rightY = currentPosition.getyCoordinate();
+            if ((rightX >= 0 && rightX < 30) && (rightY >= 0 && rightY < 30))
+            {
+                if (map[rightX][rightY] instanceof CarPassable
+                        && (((CarPassable) map[rightX][rightY]).getMovementSide() == this.getMovementSide())
+                        && !map[rightX][rightY].isTaken() && !pastLocations.contains(map[rightX][rightY]))
+                    adjacentTracks.add((CarPassable) map[rightX][rightY]);
+            }
 
-        int bottomX = currentPosition.getxCoordinate(); int bottomY = currentPosition.getyCoordinate() - 1;
-        if((bottomX>=0 && bottomX<30) && (bottomY>=0 && bottomY<30))
-        {
-            if (map[bottomX][bottomY] instanceof CarPassable
-                    && (((CarPassable)map[bottomX][bottomY]).getMovementSide()) == this.getMovementSide()
-                    && !map[bottomX][bottomY].isTaken())
-                adjacentTracks.add((CarPassable) map[bottomX][bottomY]);
+            int leftX = currentPosition.getxCoordinate() - 1;
+            int leftY = currentPosition.getyCoordinate();
+            if ((leftX >= 0 && leftX < 30) && (leftX >= 0 && leftY < 30))
+            {
+                if (map[leftX][leftY] instanceof CarPassable
+                        && (((CarPassable) map[leftX][leftY]).getMovementSide() == this.getMovementSide())
+                        && !map[leftX][leftY].isTaken() && !pastLocations.contains(map[leftX][leftY]))
+                    adjacentTracks.add((CarPassable) map[leftX][leftY]);
+            }
+
+            int bottomX = currentPosition.getxCoordinate();
+            int bottomY = currentPosition.getyCoordinate() - 1;
+            if ((bottomX >= 0 && bottomX < 30) && (bottomY >= 0 && bottomY < 30))
+            {
+                if (map[bottomX][bottomY] instanceof CarPassable
+                        && (((CarPassable) map[bottomX][bottomY]).getMovementSide()) == this.getMovementSide()
+                        && !map[bottomX][bottomY].isTaken() && !pastLocations.contains(map[bottomX][bottomY]))
+                    adjacentTracks.add((CarPassable) map[bottomX][bottomY]);
+            }
         }
         return adjacentTracks;
 
-}
+    }
 
     public void setAlive(boolean alive)
     {
@@ -141,11 +151,13 @@ public abstract class Vehicle implements Runnable
         Platform.runLater(() -> map[oldX][oldY].putContent(""));
         this.xCoordinate = newX; this.yCoordinate = newY;
         this.currentPosition = map[newX][newY];
+        pastLocations.add(currentPosition);
         Platform.runLater(() -> map[xCoordinate][yCoordinate].putContent(this.toString()));
 
         if(exitPoint.getxCoordinate()==newX && exitPoint.getyCoordinate()==newY)
         {
             //TODO make it draw itself on the last tile
+            //TODO make cars on railway crossings check whether there is an incoming train
             isAlive = false;
             Platform.runLater(() -> map[newX][newY].putContent(""));
         }
