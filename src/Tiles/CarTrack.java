@@ -16,4 +16,10 @@ public class CarTrack extends Tile implements CarPassable
         rectangle.setFill(carTrackColor);
         this.movementSide = movementSide;
     }
+
+    @Override
+    public MovementSide getMovementSide()
+    {
+        return movementSide;
+    }
 }

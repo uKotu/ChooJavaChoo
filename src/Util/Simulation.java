@@ -8,6 +8,7 @@ import Tiles.TrainTrack;
 import Trains.Connectable;
 import Trains.Train;
 import Trains.TrainBuilder;
+import Vehicles.CarBuilder;
 
 
 import java.io.BufferedReader;
@@ -262,6 +263,10 @@ public  class Simulation
             //start filewatcher
             Watcher trainWatcher = new Watcher(trainFolder, this.getClass().getDeclaredMethod("addTrain",String.class),this);
             trainWatcher.start();
+            CarBuilder carBuilder = new CarBuilder(carCountTrack1,carCountTrack2,carCountTrack3,track1SpeedLimit,track2SpeedLimit,track3SpeedLimit,map);
+            Thread carBuilderThread = new Thread(carBuilder,"carBuilderThread");
+            carBuilderThread.start();
+
 
             //create trains/cars
 

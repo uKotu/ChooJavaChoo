@@ -14,4 +14,10 @@ public class RailwayCrossing extends TrainTrack implements TrainPassable, CarPas
         rectangle.setFill(carTrackColor);
         this.movementSide = movementSide;
     }
+
+    @Override
+    public MovementSide getMovementSide()
+    {
+        return movementSide;
+    }
 }

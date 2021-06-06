@@ -29,18 +29,19 @@ public class MapController
         {
             //left bottom corner cartrack
 
-            for (int i=20, j = 0; j < 7; j++)
+            //TODO left and right corner catracks are not set properly
+            for (int i = 0, j = 20; i <= 8; i++)
             {
                 CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
 
-                addTile(r,j,i);
+                addTile(r,i,j);//j,i
             }
 
-            for (int i=21, j = 0; j < 7; j++)
+            for (int i = 0, j = 21; i < 7; i++)
             {
                 CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
 
-                addTile(r,j,i);
+                addTile(r,i,j);
             }
 
             for (int i = 8, j = 20; j < 30; j++)
@@ -250,11 +251,11 @@ public class MapController
         ////////railwayX/////
         {
             //left crossing
-            RailwayCrossing leftX1 = new RailwayCrossing("", 2, 20, tileWidth, tileHeight,MovementSide.LEFT);
+            RailwayCrossing leftX1 = new RailwayCrossing("", 2, 20, tileWidth, tileHeight,MovementSide.RIGHT);
             addTile(leftX1, 2, 20);
             AB.addTile(leftX1);
 
-            RailwayCrossing leftX2 = new RailwayCrossing("", 2, 21, tileWidth, tileHeight,MovementSide.RIGHT);
+            RailwayCrossing leftX2 = new RailwayCrossing("", 2, 21, tileWidth, tileHeight,MovementSide.LEFT);
             addTile(leftX2, 2, 21);
             AB.addTile(leftX2);
 
