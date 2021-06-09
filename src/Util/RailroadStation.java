@@ -2,7 +2,7 @@ package Util;
 
 import Tiles.StationTile;
 import Tiles.Tile;
-import Tiles.TrainTrack;
+import Tiles.TrainTrackTile;
 import Trains.Train;
 
 import java.util.*;
@@ -11,13 +11,13 @@ public class RailroadStation
 {
     private final LinkedList<StationTile> tilesTaken;
     private ArrayDeque<Train> trainQueue;
-    private final LinkedList<TrainTrack> possibleExitCoordinates;
+    private final LinkedList<TrainTrackTile> possibleExitCoordinates;
     LinkedList<RailPath> railPaths;
     private final String name;
     private LinkedList<Train> trains;
 
 
-    RailroadStation(String name, LinkedList<StationTile> tilesTaken, LinkedList<TrainTrack> possibleExitCoordinates, LinkedList<Train> trains)
+    RailroadStation(String name, LinkedList<StationTile> tilesTaken, LinkedList<TrainTrackTile> possibleExitCoordinates, LinkedList<Train> trains)
     {
         this.name = name;
         this.tilesTaken = tilesTaken;
@@ -31,7 +31,7 @@ public class RailroadStation
     {
         return trainQueue.peek() == train;
     }
-    public boolean greenLight()
+    public synchronized boolean greenLight()
     {
         Train nextTrain = trainQueue.peek();
         for(var x : railPaths)
@@ -50,7 +50,7 @@ public class RailroadStation
         }
         return false;
     }
-    private boolean noIncomingTrainsOnTheRailPath(RailPath railPath)
+    private synchronized boolean noIncomingTrainsOnTheRailPath(RailPath railPath)
     {
         //check all trains which are on the railpath for their next station
         //if their next station is the current station, there is an incoming train
@@ -79,7 +79,7 @@ public class RailroadStation
         return tilesTaken.get(0).getyCoordinate();
     }
 
-    public LinkedList<TrainTrack> getPossibleExitCoordinates()
+    public LinkedList<TrainTrackTile> getPossibleExitCoordinates()
     {
         return possibleExitCoordinates;
     }

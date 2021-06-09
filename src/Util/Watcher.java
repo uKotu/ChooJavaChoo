@@ -52,8 +52,7 @@ public class Watcher extends Thread
                     WatchEvent.Kind<?> kind = event.kind();
                     WatchEvent<Path> ev = (WatchEvent<Path>) event;
                     String fileName = ev.context().toString().trim();
-                    if ((kind.equals(StandardWatchEventKinds.ENTRY_MODIFY) || kind.equals(StandardWatchEventKinds.ENTRY_CREATE)) &&
-                            (fileName.endsWith(".properties") || fileName.endsWith(".txt") || fileName.endsWith(".ser")))
+                    if (kind.equals(StandardWatchEventKinds.ENTRY_CREATE))
                         sim.addTrain(filePath+"\\"+fileName);
                 }
                 boolean valid = key.reset();

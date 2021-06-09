@@ -1,11 +1,23 @@
 package FXML;
 
+import Main.Main;
 import Tiles.*;
 import Util.RailPath;
+import Util.RailwayCrossing;
+import Util.Simulation;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 
+import java.io.File;
 import java.util.LinkedList;
+import java.util.logging.Level;
 
 public class MapController
 {
@@ -18,7 +30,13 @@ public class MapController
     double tileHeight = (sceneHeight / numberOfTiles);
     Tile[][] playField = new Tile[numberOfTiles][numberOfTiles];
     LinkedList<RailPath> railPaths = new LinkedList<>();
+    LinkedList<RailwayCrossing> railwayCrossings = new LinkedList<>();
+    private Simulation simulation;
 
+    @FXML
+    public Button movementHistoryWindowButton;
+    @FXML
+    public Button startSimButton;
     @FXML
     public GridPane pane;
     private int spots = 30;
@@ -31,28 +49,28 @@ public class MapController
 
             for (int i = 0, j = 20; i <= 8; i++)
             {
-                CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
+                CarTrackTile r = new CarTrackTile("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
 
                 addTile(r,i,j);//j,i
             }
 
             for (int i = 0, j = 21; i < 7; i++)
             {
-                CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
+                CarTrackTile r = new CarTrackTile("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
 
                 addTile(r,i,j);
             }
 
             for (int i = 8, j = 20; j < 30; j++)
             {
-                CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
+                CarTrackTile r = new CarTrackTile("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
 
                 addTile(r,i,j);
             }
 
             for (int i = 7, j = 21; j < 30; j++)
             {
-                CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
+                CarTrackTile r = new CarTrackTile("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
 
                 addTile(r,i,j);
             }
@@ -61,14 +79,14 @@ public class MapController
 
             for (int i = 14, j = 0; j < 30; j++)
             {
-                CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
+                CarTrackTile r = new CarTrackTile("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
 
                 addTile(r,i,j);
             }
 
             for (int i=13, j = 0; j < 30; j++)
             {
-                CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
+                CarTrackTile r = new CarTrackTile("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
 
                 addTile(r, i, j);
             }
@@ -76,40 +94,40 @@ public class MapController
 
             for (int i=21, j = 20; j < 30; j++)
             {
-                CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
+                CarTrackTile r = new CarTrackTile("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
 
                 addTile(r,i,j);
             }
 
             for (int i=22, j = 21; j < 30; j++)
             {
-                CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
+                CarTrackTile r = new CarTrackTile("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
 
                 addTile(r,i,j);
             }
 
             for (int i = 22, j = 21; i < 30; i++)
             {
-                CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
+                CarTrackTile r = new CarTrackTile("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
 
                 addTile(r,i,j);
             }
 
             for (int i = 21,j = 20; i < 30; i++)
             {
-                CarTrack r = new CarTrack("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
+                CarTrackTile r = new CarTrackTile("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
 
                 addTile(r,i,j);
             }
 
         }
 
-        RailPath AB = new RailPath("AB");
+        RailPath AB = new RailPath("AB", playField);
         /////////A2B/////////
         {
             for (int j = 16, i = 2; j < 30; j++)
             {
-                TrainTrack r = new TrainTrack("", i, j, tileWidth, tileHeight);
+                TrainTrackTile r = new TrainTrackTile("", i, j, tileWidth, tileHeight);
 
                 addTile(r,i,j);
                 AB.addTile(r);
@@ -117,33 +135,33 @@ public class MapController
             }
             for (int i = 3, j = 16; i < 6; i++)
             {
-                TrainTrack r = new TrainTrack("", i, j, tileWidth, tileHeight);
+                TrainTrackTile r = new TrainTrackTile("", i, j, tileWidth, tileHeight);
 
                 addTile(r,i,j);
                 AB.addTile(r);
             }
             for (int i = 6, j = 6; j <= 16; j++)
             {
-                TrainTrack r = new TrainTrack("", i, j, tileWidth, tileHeight);
+                TrainTrackTile r = new TrainTrackTile("", i, j, tileWidth, tileHeight);
 
                 addTile(r,i,j);
                 AB.addTile(r);
             }
         }
-        RailPath BC = new RailPath("BC");
+        RailPath BC = new RailPath("BC", playField);
 
         /////////B2C/////////
         {
             for (int j = 6, i = 7; i < 20; i++)
             {
-                TrainTrack r = new TrainTrack("", i, j, tileWidth, tileHeight);
+                TrainTrackTile r = new TrainTrackTile("", i, j, tileWidth, tileHeight);
 
                 addTile(r,i,j);
                 BC.addTile(r);
             }
             for(int i=19,j=7;j<=12;j++)
             {
-                TrainTrack r = new TrainTrack("", i, j, tileWidth, tileHeight);
+                TrainTrackTile r = new TrainTrackTile("", i, j, tileWidth, tileHeight);
 
                 addTile(r,i,j);
                 BC.addTile(r);
@@ -151,95 +169,95 @@ public class MapController
 
 
         }
-        RailPath CE = new RailPath("CE");
+        RailPath CE = new RailPath("CE", playField);
 
         /////////C2E/////////
         {
             for(int i=20, j=12;j<=18;j++)
             {
-                TrainTrack r = new TrainTrack("", i, j, tileWidth, tileHeight);
+                TrainTrackTile r = new TrainTrackTile("", i, j, tileWidth, tileHeight);
 
                 addTile(r,i,j);
                 CE.addTile(r);
             }
             for(int i=20,j=18;i<27;i++)
             {
-                TrainTrack r = new TrainTrack("", i, j, tileWidth, tileHeight);
+                TrainTrackTile r = new TrainTrackTile("", i, j, tileWidth, tileHeight);
 
                 addTile(r,i,j);
                 CE.addTile(r);
             }
             for(int i=26,j=18;j<26;j++)
             {
-                TrainTrack r = new TrainTrack("", i, j, tileWidth, tileHeight);
+                TrainTrackTile r = new TrainTrackTile("", i, j, tileWidth, tileHeight);
 
                 addTile(r,i,j);
                 CE.addTile(r);
             }
             for(int j=25,i=27;i<30;i++)
             {
-                TrainTrack r = new TrainTrack("", i, j, tileWidth, tileHeight);
+                TrainTrackTile r = new TrainTrackTile("", i, j, tileWidth, tileHeight);
 
                 addTile(r,i,j);
                 CE.addTile(r);
             }
         }
 
-        RailPath CD = new RailPath("CD");
+        RailPath CD = new RailPath("CD", playField);
         /////////C2D/////////
         {
             for(int i =21,j=12;i<=26;i++)
             {
-                TrainTrack r = new TrainTrack("", i, j, tileWidth, tileHeight);
+                TrainTrackTile r = new TrainTrackTile("", i, j, tileWidth, tileHeight);
 
                 addTile(r,i,j);
                 CD.addTile(r);
             }
             for(int i=26,j=9;j<=12;j++)
             {
-                TrainTrack r = new TrainTrack("", i, j, tileWidth, tileHeight);
+                TrainTrackTile r = new TrainTrackTile("", i, j, tileWidth, tileHeight);
 
                 addTile(r,i,j);
                 CD.addTile(r);
             }
             for(int i=26,j=9;i<29;i++)
             {
-                TrainTrack r = new TrainTrack("", i, j, tileWidth, tileHeight);
+                TrainTrackTile r = new TrainTrackTile("", i, j, tileWidth, tileHeight);
 
                 addTile(r,i,j);
                 CD.addTile(r);
             }
             for(int i=28,j=6;j<9;j++)
             {
-                TrainTrack r = new TrainTrack("", i, j, tileWidth, tileHeight);
+                TrainTrackTile r = new TrainTrackTile("", i, j, tileWidth, tileHeight);
 
                 addTile(r,i,j);
                 CD.addTile(r);
             }
             for(int i=23,j=5;i<29;i++)
             {
-                TrainTrack r = new TrainTrack("", i, j, tileWidth, tileHeight);
+                TrainTrackTile r = new TrainTrackTile("", i, j, tileWidth, tileHeight);
 
                 addTile(r,i,j);
                 CD.addTile(r);
             }
             for(int i=23,j=3;j<6;j++)
             {
-                TrainTrack r = new TrainTrack("", i, j, tileWidth, tileHeight);
+                TrainTrackTile r = new TrainTrackTile("", i, j, tileWidth, tileHeight);
 
                 addTile(r,i,j);
                 CD.addTile(r);
             }
             for(int j=1,i=22;j<=3;j++)
             {
-                TrainTrack r = new TrainTrack("", i, j, tileWidth, tileHeight);
+                TrainTrackTile r = new TrainTrackTile("", i, j, tileWidth, tileHeight);
 
                 addTile(r,i,j);
                 CD.addTile(r);
             }
             for(int j=1,i=22;i<26;i++)
             {
-                TrainTrack r = new TrainTrack("", i, j, tileWidth, tileHeight);
+                TrainTrackTile r = new TrainTrackTile("", i, j, tileWidth, tileHeight);
 
                 addTile(r,i,j);
                 CD.addTile(r);
@@ -249,51 +267,44 @@ public class MapController
         ////////railwayX/////
         {
             //left crossing
-            RailwayCrossing leftX1 = new RailwayCrossing("", 2, 20, tileWidth, tileHeight,MovementSide.RIGHT);
+            RailwayCrossingTile leftX1 = new RailwayCrossingTile("", 2, 20, tileWidth, tileHeight,MovementSide.RIGHT);
             addTile(leftX1, 2, 20);
             AB.addTile(leftX1);
 
-            RailwayCrossing leftX2 = new RailwayCrossing("", 2, 21, tileWidth, tileHeight,MovementSide.LEFT);
+            RailwayCrossingTile leftX2 = new RailwayCrossingTile("", 2, 21, tileWidth, tileHeight,MovementSide.LEFT);
             addTile(leftX2, 2, 21);
             AB.addTile(leftX2);
 
-            /*for (int i = 2, j = 20; j <= 21; j++)
-            {
-                RailwayCrossing r = new RailwayCrossing("", i, j, tileWidth, tileHeight);
+            LinkedList<Tile> leftCrossingTiles = new LinkedList<>(); leftCrossingTiles.add(leftX1); leftCrossingTiles.add(leftX2);
+            RailwayCrossing leftCrossing = new RailwayCrossing(AB,leftCrossingTiles,1);
 
-                addTile(r, i, j);
-                AB.addTile(r);
-            }*/
-            RailwayCrossing midX1 = new RailwayCrossing("", 13, 6, tileWidth, tileHeight,MovementSide.LEFT);
+
+            RailwayCrossingTile midX1 = new RailwayCrossingTile("", 13, 6, tileWidth, tileHeight,MovementSide.LEFT);
             addTile(midX1, 13, 6);
             BC.addTile(midX1);
 
-            RailwayCrossing midX2 = new RailwayCrossing("", 14, 6, tileWidth, tileHeight,MovementSide.RIGHT);
+            RailwayCrossingTile midX2 = new RailwayCrossingTile("", 14, 6, tileWidth, tileHeight,MovementSide.RIGHT);
             addTile(midX2, 14, 6);
-            BC.addTile(midX2);/*
-            for (int i = 13, j = 6; i <= 14; i++)
-            {
-                RailwayCrossing r = new RailwayCrossing("", i, j, tileWidth, tileHeight);
+            BC.addTile(midX2);
 
-                addTile(r, i, j);
-                BC.addTile(r);
-            }*/
-            RailwayCrossing rightX1 = new RailwayCrossing("", 26, 20, tileWidth, tileHeight,MovementSide.LEFT);
+            LinkedList<Tile> midCrossingTiles = new LinkedList<>(); midCrossingTiles.add(midX1); midCrossingTiles.add(midX2);
+            RailwayCrossing middleCrossing = new RailwayCrossing(BC,midCrossingTiles,2);
+
+
+            RailwayCrossingTile rightX1 = new RailwayCrossingTile("", 26, 20, tileWidth, tileHeight,MovementSide.LEFT);
             addTile(rightX1, 26, 20);
             CE.addTile(rightX1);
 
-            RailwayCrossing rightX2 = new RailwayCrossing("", 26, 21, tileWidth, tileHeight,MovementSide.RIGHT);
+            RailwayCrossingTile rightX2 = new RailwayCrossingTile("", 26, 21, tileWidth, tileHeight,MovementSide.RIGHT);
             addTile(rightX2, 26, 21);
             CE.addTile(rightX2);
-            /*
-            for (int i = 26, j = 20; j <= 21; j++)
-            {
-                RailwayCrossing r = new RailwayCrossing("", i, j, tileWidth, tileHeight);
 
-                addTile(r, i, j);
-                CE.addTile(r);
-            }*/
+            LinkedList<Tile> rightCrossingTiles = new LinkedList<>(); rightCrossingTiles.add(rightX1); rightCrossingTiles.add(rightX2);
+            RailwayCrossing rightCrossing = new RailwayCrossing(CE,rightCrossingTiles,3);
+
+
             railPaths.add(AB); railPaths.add(BC); railPaths.add(CE); railPaths.add(CD);
+            railwayCrossings.add(leftCrossing); railwayCrossings.add(middleCrossing); railwayCrossings.add(rightCrossing);
         }
     }
 
@@ -344,7 +355,38 @@ public class MapController
 
     }
 
+    public void setSimulation(Simulation sim) { this.simulation = sim;}
+    public void startButtonClicked()
+    {
+        startSimButton.setDisable(true);
+        simulation.start();
 
+    }
 
+    public void movementHistoryWindowButtonClicked()
+    {
+        Stage stage = new Stage();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Movement window picker");
+        fileChooser.showOpenDialog(stage);
+        /*Parent root;
+        try {
+            root = FXMLLoader.load(getClass().getClassLoader().getResource("FXML/MovementHistory.fxml"));
+            Stage stage = new Stage();
+            stage.setTitle("Movement history");
+            stage.setScene(new Scene(root, 450, 450));
+            stage.show();
+            // Hide this current window (if this is what you want)
 
+        }
+        catch (Exception ex)
+        {
+            Main.logger.log(Level.SEVERE,ex.getMessage(),ex);
+        }*/
+    }
+
+    public LinkedList<RailwayCrossing> getRailwayCrossings()
+    {
+        return railwayCrossings;
+    }
 }

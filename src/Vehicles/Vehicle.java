@@ -5,6 +5,7 @@ import Tiles.CarPassable;
 import Tiles.MovementSide;
 import Tiles.Tile;
 import Util.Coordinates;
+import Util.RailwayCrossing;
 import javafx.application.Platform;
 
 import java.util.*;
@@ -20,12 +21,13 @@ public abstract class Vehicle implements Runnable
     protected final int VehicleID;
     private int xCoordinate, yCoordinate;
     private LinkedList<Tile> pastLocations;
+    private RailwayCrossing railwayCrossingOnPath;
 
     volatile double speed;
     private boolean isAlive;
 
 
-    Vehicle(String type, String model, int buildYear, Tile[][] map, Tile entryPoint, Tile exitPoint)
+    Vehicle(String type, String model, int buildYear, Tile[][] map, Tile entryPoint, Tile exitPoint, int allowedSpeedOnRoad, RailwayCrossing railwayCrossing)
     {
         this.manufacturer = type;
         this.model = model;
@@ -37,16 +39,11 @@ public abstract class Vehicle implements Runnable
         this.currentPosition = entryPoint;
         this.xCoordinate = currentPosition.getxCoordinate();
         this.yCoordinate = currentPosition.getyCoordinate();
-        speed = 1;
-        pastLocations = new LinkedList<>();
+        this.railwayCrossingOnPath = railwayCrossing;
 
-
-    }
-    public void updateSpeed(double newSpeedLimit)
-    {
         Random rnd = new Random();
-
-        speed = rnd.nextDouble()*newSpeedLimit;
+        speed = 1 + rnd.nextDouble()*allowedSpeedOnRoad;
+        pastLocations = new LinkedList<>();
     }
 
     private LinkedList<CarPassable> getAdjacentTracks()
@@ -108,12 +105,14 @@ public abstract class Vehicle implements Runnable
     @Override
     public void run()
     {
+        pastLocations.add(currentPosition);
+        Platform.runLater(() -> map[xCoordinate][yCoordinate].putContent(this.toString()));
         while(isAlive)
         {
             try
             {
                 Thread.sleep((long) speed*1000);
-                synchronized (Vehicle.class)
+                synchronized (map)
                 {
                     move();
                 }
@@ -128,6 +127,12 @@ public abstract class Vehicle implements Runnable
 
     private synchronized void move()
     {
+        if(currentPosition==exitPoint)
+        {
+            isAlive = false;
+            Platform.runLater(() -> map[currentPosition.getxCoordinate()][currentPosition.getyCoordinate()].putContent(""));
+            return;
+        }
         int newX, newY;
         HashMap<Integer,Tile> tileDistanceMap = new HashMap<>();
         var freeAdjacentTracks = getAdjacentTracks();
@@ -143,10 +148,16 @@ public abstract class Vehicle implements Runnable
         var nextTileValueEntry = Collections.min(tileDistanceMap.entrySet(), Map.Entry.comparingByKey());
         var nextTile = nextTileValueEntry.getValue();
 
+        if(railwayCrossingOnPath.getTilesTaken().contains(nextTile))
+        {
+            if(!railwayCrossingOnPath.isGreenLight())
+            {
+                return;
+            }
+        }
+
         newX = nextTile.getxCoordinate(); newY = nextTile.getyCoordinate();
         int oldX = currentPosition.getxCoordinate(); int oldY = currentPosition.getyCoordinate();
-
-
 
         Platform.runLater(() -> map[oldX][oldY].putContent(""));
         this.xCoordinate = newX; this.yCoordinate = newY;
@@ -154,13 +165,9 @@ public abstract class Vehicle implements Runnable
         pastLocations.add(currentPosition);
         Platform.runLater(() -> map[xCoordinate][yCoordinate].putContent(this.toString()));
 
-        if(exitPoint.getxCoordinate()==newX && exitPoint.getyCoordinate()==newY)
-        {
-            //TODO make it draw itself on the last tile
-            //TODO make cars on railway crossings check whether there is an incoming train
-            isAlive = false;
-            Platform.runLater(() -> map[newX][newY].putContent(""));
-        }
+
+        //TODO make cars on railway crossings check whether there is an incoming train
+
     }
 
     public MovementSide getMovementSide()

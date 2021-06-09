@@ -4,7 +4,7 @@ import FXML.MapController;
 import Main.Main;
 import Tiles.StationTile;
 import Tiles.Tile;
-import Tiles.TrainTrack;
+import Tiles.TrainTrackTile;
 import Trains.Connectable;
 import Trains.Train;
 import Trains.TrainBuilder;
@@ -12,9 +12,7 @@ import Vehicles.CarBuilder;
 
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.lang.reflect.InaccessibleObjectException;
 import java.nio.file.*;
 import java.util.LinkedList;
@@ -22,14 +20,15 @@ import java.util.logging.Level;
 
 import static java.nio.file.StandardWatchEventKinds.*;
 
-public  class Simulation
+public class Simulation
 {
     private final static String configFile = "C:\\Users\\Lenovo\\IdeaProjects\\ChooJavaChoo\\config.cfg";
-    private static String trainFolder = "C:\\Users\\Lenovo\\IdeaProjects\\ChooJavaChoo\\Trainspotting";
-    private static String movementFolder = "";
+    private String trainFolder = "";
+    private String movementFolder = "";
 
     private LinkedList<Train> trains;
     private LinkedList<RailroadStation> stations;
+    private LinkedList<RailwayCrossing> railwayCrossings;
     private Tile[][] map;
     private final MapController mapController;
     private int carCountTrack1, carCountTrack2, carCountTrack3;
@@ -81,7 +80,7 @@ public  class Simulation
 
             reader.close();
 
-            Train newTrain = new Train(trainParts,trainSpeed,trainRoute,map,stations);
+            Train newTrain = new Train(trainParts,trainSpeed,trainRoute,map,stations, movementFolder);
             trains.add(newTrain);
 
             Thread newlyCreatedTrainThread = new Thread(newTrain);
@@ -108,8 +107,8 @@ public  class Simulation
 
         LinkedList<StationTile> stationATiles = new LinkedList<>();
         stationATiles.add(a1); stationATiles.add(a2); stationATiles.add(a3); stationATiles.add(a4);
-        LinkedList<TrainTrack> stationAExits = new LinkedList<>();
-        stationAExits.add((TrainTrack) map[2][29]); stationAExits.add((TrainTrack) map[2][26]);
+        LinkedList<TrainTrackTile> stationAExits = new LinkedList<>();
+        stationAExits.add((TrainTrackTile) map[2][29]); stationAExits.add((TrainTrackTile) map[2][26]);
 
         RailroadStation stationA = new RailroadStation("A",stationATiles, stationAExits, trains);
         for(var x : mapController.getRailPaths())
@@ -131,8 +130,8 @@ public  class Simulation
 
         LinkedList<StationTile> stationBTiles = new LinkedList<>();
         stationBTiles.add(b1); stationBTiles.add(b2); stationBTiles.add(b3); stationBTiles.add(b4);
-        LinkedList<TrainTrack> stationBExits = new LinkedList<>();
-        stationBExits.add((TrainTrack) map[6][6]); stationBExits.add((TrainTrack) map[9][6]);
+        LinkedList<TrainTrackTile> stationBExits = new LinkedList<>();
+        stationBExits.add((TrainTrackTile) map[6][6]); stationBExits.add((TrainTrackTile) map[9][6]);
 
         RailroadStation stationB = new RailroadStation("B",stationBTiles, stationBExits, trains);
         for(var x : mapController.getRailPaths())
@@ -153,8 +152,8 @@ public  class Simulation
 
         LinkedList<StationTile> stationCTiles = new LinkedList<>();
         stationCTiles.add(c1); stationCTiles.add(c2); stationCTiles.add(c3); stationCTiles.add(c4);
-        LinkedList<TrainTrack> stationCExits = new LinkedList<>();
-        stationCExits.add((TrainTrack) map[19][11]); stationCExits.add((TrainTrack) map[21][12]); stationCExits.add((TrainTrack)map[20][14]);
+        LinkedList<TrainTrackTile> stationCExits = new LinkedList<>();
+        stationCExits.add((TrainTrackTile) map[19][11]); stationCExits.add((TrainTrackTile) map[21][12]); stationCExits.add((TrainTrackTile)map[20][14]);
 
         RailroadStation stationC = new RailroadStation("C",stationCTiles, stationCExits, trains);
         for(var x : mapController.getRailPaths())
@@ -175,8 +174,8 @@ public  class Simulation
 
         LinkedList<StationTile> stationDTiles = new LinkedList<>();
         stationDTiles.add(d1); stationDTiles.add(d2); stationDTiles.add(d3); stationDTiles.add(d4);
-        LinkedList<TrainTrack> stationDExits = new LinkedList<>();
-        stationDExits.add((TrainTrack) map[25][1]);
+        LinkedList<TrainTrackTile> stationDExits = new LinkedList<>();
+        stationDExits.add((TrainTrackTile) map[25][1]);
 
         RailroadStation stationD = new RailroadStation("D",stationDTiles, stationDExits, trains);
         for(var x : mapController.getRailPaths())
@@ -197,8 +196,8 @@ public  class Simulation
 
         LinkedList<StationTile> stationETiles = new LinkedList<>();
         stationETiles.add(e1); stationETiles.add(e2); stationETiles.add(e3); stationETiles.add(e4);
-        LinkedList<TrainTrack> stationEExits = new LinkedList<>();
-        stationEExits.add((TrainTrack) map[27][25]); stationEExits.add((TrainTrack) map[26][24]);
+        LinkedList<TrainTrackTile> stationEExits = new LinkedList<>();
+        stationEExits.add((TrainTrackTile) map[27][25]); stationEExits.add((TrainTrackTile) map[26][24]);
         //[26][24]          [27][25]
         RailroadStation stationE = new RailroadStation("E",stationETiles, stationEExits, trains);
         for(var x : mapController.getRailPaths())
@@ -210,6 +209,15 @@ public  class Simulation
 
     }
 
+    private void initializeRailwayCrossings()
+    {
+        this.railwayCrossings = mapController.getRailwayCrossings();
+        for(var crossing: railwayCrossings)
+        {
+            crossing.giveTrainInfo(trains);
+        }
+
+    }
     private boolean configReader()
     {
         BufferedReader reader;
@@ -251,20 +259,26 @@ public  class Simulation
 
     }
 
+
     public void start()
     {
         try
         {
+
+            //read tracks configuration
             if(!configReader())
                 throw new InaccessibleObjectException("Reading config file failed!");
             //create railroad stations
             initializeRailroadStations();
+            initializeRailwayCrossings();
 
             //start filewatcher
             Watcher trainWatcher = new Watcher(trainFolder, this.getClass().getDeclaredMethod("addTrain",String.class),this);
             trainWatcher.start();
-            CarBuilder carBuilder = new CarBuilder(carCountTrack1,carCountTrack2,carCountTrack3,track1SpeedLimit,track2SpeedLimit,track3SpeedLimit,map);
-            Thread carBuilderThread = new Thread(carBuilder,"carBuilderThread");
+            CarBuilder carBuilder = new CarBuilder(
+                    carCountTrack1,carCountTrack2,carCountTrack3,
+                    track1SpeedLimit,track2SpeedLimit,track3SpeedLimit,map, railwayCrossings);
+            Thread carBuilderThread = new Thread(carBuilder);
             carBuilderThread.start();
 
 

@@ -4,19 +4,23 @@ import Main.Main;
 import Tiles.StationTile;
 import Tiles.Tile;
 import Tiles.TrainPassable;
-import Tiles.TrainTrack;
+import Tiles.TrainTrackTile;
 import Trains.Locomotives.Locomotive;
 import Util.Coordinates;
+import Util.MovementHistoryUnit;
 import Util.RailroadStation;
 import javafx.application.Platform;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.ObjectOutputStream;
 import java.util.*;
 import java.util.logging.Level;
 
 public class Train implements Runnable
 {
     LinkedList<Connectable> parts;
-    private final double trainSpeed;
+    private final double trainSpeed; //TODO fix speed
     private final String route;
     private int positionOnRoute;
     private RailroadStation currentStation;
@@ -26,18 +30,23 @@ public class Train implements Runnable
     private boolean trainAlive;
     private int trainPartsWhichHaveLeftThePlatform, trainPartsWhichHaveEnteredThePlatform;
 
-    public Train(LinkedList<Connectable> trainPieces, double trainSpeed, String route, Tile[][] map, LinkedList<RailroadStation> stations)
+    private final String movementFolder;
+    private LinkedList<MovementHistoryUnit> movementHistory;
+
+    public Train(LinkedList<Connectable> trainPieces, double trainSpeed, String route, Tile[][] map, LinkedList<RailroadStation> stations, String movementFolder)
     {
-        trainAlive = true;
-        parts = trainPieces;
+        this.trainAlive = true;
+        this.parts = trainPieces;
         this.trainSpeed = trainSpeed;
         this.route = route;
-        currentState = TrainState.Parked;
-        positionOnRoute = 0;
+        this.currentState = TrainState.Parked;
+        this.positionOnRoute = 0;
         this.stations = stations;
         trainPartsWhichHaveLeftThePlatform = 0;
         trainPartsWhichHaveEnteredThePlatform = 0;
         this.map = map;
+        this.movementHistory = new LinkedList<>();
+        this.movementFolder = movementFolder;
 
         for(var x : stations) //initialize first station
         {
@@ -50,9 +59,9 @@ public class Train implements Runnable
         }
     }
 
-    private LinkedList<TrainTrack> getAdjacentFreeTracks()
+    private LinkedList<TrainTrackTile> getAdjacentFreeTracks()
     {
-        LinkedList<TrainTrack> adjacentTracks = new LinkedList<>();
+        LinkedList<TrainTrackTile> adjacentTracks = new LinkedList<>();
         Locomotive trainHead = (Locomotive) parts.get(0); //first part of the train must be a locomotive
         if (currentState==TrainState.Parked || this.trainPartsWhichHaveLeftThePlatform==0)
         {
@@ -64,19 +73,19 @@ public class Train implements Runnable
         {
             if (map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()] instanceof TrainPassable
                     && !map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()].isTaken())
-                adjacentTracks.add((TrainTrack) map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()]);
+                adjacentTracks.add((TrainTrackTile) map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()]);
 
             if (map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1] instanceof TrainPassable
                     && !map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1].isTaken())
-                adjacentTracks.add((TrainTrack) map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1]);
+                adjacentTracks.add((TrainTrackTile) map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1]);
 
             if (map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()] instanceof TrainPassable
                     && !map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()].isTaken())
-                adjacentTracks.add((TrainTrack) map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()]);
+                adjacentTracks.add((TrainTrackTile) map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()]);
 
             if (map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1] instanceof TrainPassable
                     && !map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1].isTaken())
-                adjacentTracks.add((TrainTrack) map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1]);
+                adjacentTracks.add((TrainTrackTile) map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1]);
         }
             return adjacentTracks;
     }
@@ -201,7 +210,10 @@ public class Train implements Runnable
 
                 }
             }
+            movementHistory.add(new MovementHistoryUnit(getTrainHeadXCoordinate(),getTrainHeadYCoordinate()));
         }
+        serializeMovementHistory();
+
     }
     /* movement logic
 
@@ -408,5 +420,36 @@ public class Train implements Runnable
     public int getTrainHeadYCoordinate()
     {
         return parts.get(0).getyCoordinate();
+    }
+
+    private void serializeMovementHistory()
+    {
+        try
+        {
+            String newFileName = movementFolder + "\\"  + this;
+            File file = new File(newFileName);
+            file.createNewFile();
+            FileOutputStream fout = new FileOutputStream(newFileName);
+            ObjectOutputStream streamOut = new ObjectOutputStream(fout);
+
+            streamOut.writeObject(this.movementHistory);
+            streamOut.flush();
+            streamOut.close();
+
+        }
+        catch (Exception ex)
+        {
+            Main.logger.log(Level.SEVERE,ex.getMessage(),ex);
+        }
+    }
+
+    public int getTrainLength()
+    {
+        return parts.size();
+    }
+
+    public LinkedList<MovementHistoryUnit> getMovementHistory()
+    {
+        return movementHistory;
     }
 }

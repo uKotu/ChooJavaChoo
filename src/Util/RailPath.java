@@ -11,10 +11,11 @@ public class RailPath
     String stationsConnected;
     Tile[][] map;
 
-    public RailPath(String stationsConnected)
+    public RailPath(String stationsConnected, Tile[][] map)
     {
         this.stationsConnected = stationsConnected;
         tilesOnPath = new LinkedList<>();
+        this.map = map;
     }
 
     public void addTile(Tile tile)
@@ -32,5 +33,10 @@ public class RailPath
             }
             return true;
         }
+    }
+
+    public boolean containsTile(Tile tile)
+    {
+        return tilesOnPath.contains(tile);
     }
 }

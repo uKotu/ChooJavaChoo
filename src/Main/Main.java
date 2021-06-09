@@ -5,7 +5,6 @@ import Tiles.Tile;
 import Util.Simulation;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
@@ -22,6 +21,7 @@ public class Main extends Application
     private double sceneWidth = 1024;
     private double sceneHeight = 768;
     static MapController mapController;
+    private Simulation simulation;
 
     public static final Logger logger = Logger.getLogger("MyLogger");
 
@@ -32,7 +32,8 @@ public class Main extends Application
             FileHandler fh = new FileHandler("error.log");
             logger.addHandler(fh);
             fh.setFormatter(new SimpleFormatter());
-        } catch (IOException e)
+        }
+        catch (IOException e)
         {
             logger.log(Level.SEVERE, e.getMessage(), e);
         }
@@ -50,17 +51,16 @@ public class Main extends Application
             primaryStage.setTitle("Map");
             primaryStage.setScene(new Scene((Parent) x, sceneWidth, sceneHeight));
             primaryStage.show();
-            Simulation simulation = new Simulation(mapController);
+            simulation = new Simulation(mapController);
 
-            simulation.start();
-
+            //what to start on button click
+            mapController.setSimulation(simulation);
 
 
         }
         catch (Exception ex)
         {
             logger.log(Level.SEVERE,ex.getMessage(),ex);
-
         }
     }
 
@@ -69,10 +69,12 @@ public class Main extends Application
         return mapController;
     }
 
+
+
+
     public static void main(String[] args)
     {
         launch(args);
-
     }
 
 }
