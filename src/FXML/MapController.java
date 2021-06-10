@@ -7,15 +7,12 @@ import Util.RailwayCrossing;
 import Util.Simulation;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.GridPane;
-import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import java.io.File;
 import java.util.LinkedList;
 import java.util.logging.Level;
 
@@ -26,11 +23,11 @@ public class MapController
     private double sceneHeight = 600;
 
     private static final int numberOfTiles = 30;
-    double tileWidth = (sceneWidth / numberOfTiles);
-    double tileHeight = (sceneHeight / numberOfTiles);
-    Tile[][] playField = new Tile[numberOfTiles][numberOfTiles];
-    LinkedList<RailPath> railPaths = new LinkedList<>();
-    LinkedList<RailwayCrossing> railwayCrossings = new LinkedList<>();
+    private double tileWidth = (sceneWidth / numberOfTiles);
+    private double tileHeight = (sceneHeight / numberOfTiles);
+    private Tile[][] playField = new Tile[numberOfTiles][numberOfTiles];
+    private LinkedList<RailPath> railPaths = new LinkedList<>();
+    private LinkedList<RailwayCrossing> railwayCrossings = new LinkedList<>();
     private Simulation simulation;
 
     @FXML
@@ -365,26 +362,20 @@ public class MapController
 
     public void movementHistoryWindowButtonClicked()
     {
-        Stage stage = new Stage();
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Movement window picker");
-        fileChooser.showOpenDialog(stage);
-        /*Parent root;
-        try {
+        Parent root;
+        try
+        {
             root = FXMLLoader.load(getClass().getClassLoader().getResource("FXML/MovementHistory.fxml"));
             Stage stage = new Stage();
             stage.setTitle("Movement history");
             stage.setScene(new Scene(root, 450, 450));
             stage.show();
-            // Hide this current window (if this is what you want)
-
         }
         catch (Exception ex)
         {
             Main.logger.log(Level.SEVERE,ex.getMessage(),ex);
-        }*/
+        }
     }
-
     public LinkedList<RailwayCrossing> getRailwayCrossings()
     {
         return railwayCrossings;

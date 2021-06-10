@@ -49,9 +49,9 @@ public class RailwayCrossing
             {
                 //for each train on the railpath we get the number of tiles it has passed in the current railpath
                 int numberOfTilesCrossedInCurrentRailPath = 0;
-                for(int i = train.getMovementHistory().size()-1;i>0;i--)
+                for(int i = train.getMovementHistoryList().size()-1; i>0; i--)
                 {
-                    if(railpath.containsTile(railpath.map[train.getMovementHistory().get(i).getxCoordinate()][train.getMovementHistory().get(i).getyCoordinate()]))
+                    if(railpath.containsTile(railpath.map[train.getMovementHistoryList().get(i).getxCoordinate()][train.getMovementHistoryList().get(i).getyCoordinate()]))
                         numberOfTilesCrossedInCurrentRailPath++;
                     else
                         break;
@@ -63,7 +63,7 @@ public class RailwayCrossing
                 for(int i = 0;i<numberOfTilesCrossedInCurrentRailPath;i++)
                 {
                     //we check has the entire section of the train passed the railway crossing
-                    if (tilesTaken.contains(railpath.map[train.getMovementHistory().get(i).getxCoordinate()][train.getMovementHistory().get(i).getyCoordinate()]))
+                    if (tilesTaken.contains(railpath.map[train.getMovementHistoryList().get(i).getxCoordinate()][train.getMovementHistoryList().get(i).getyCoordinate()]))
                     {
                         if (i < train.getTrainLength())
                             return false;

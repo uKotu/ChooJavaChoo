@@ -11,7 +11,7 @@ import java.util.logging.Level;
 
 public class CarBuilder implements Runnable
 {
-    private volatile int track1CarCount, track2CarCount,track3CarCount;
+    private volatile int track1VehicleCount, track2VehicleCount, track3VehicleCount;
     private volatile int track1Speed, track2Speed, track3Speed;
     Tile track1LStartLocation, track2LStartLocation, track3LStartLocation,
             track1RStartLocation, track2RStartLocation, track3RStartLocation;
@@ -84,28 +84,28 @@ public class CarBuilder implements Runnable
 
                                 }
                             }
-                                        case 3 ->
-                        {
-                            if(carOrVan==1)
+                            case 3 ->
                             {
-                                if (leftOrRight==1)
-                                    track3Queue.add(new Car(carManufacturerName,carModelName,2000+randomGenerator.nextInt(20),
-                                            1+randomGenerator.nextInt(3),map,track3LStartLocation,track3LEndLocation,track3Speed, railwayCrossings.get(2)));
+                                if(carOrVan==1)
+                                {
+                                    if (leftOrRight==1)
+                                        track3Queue.add(new Car(carManufacturerName,carModelName,2000+randomGenerator.nextInt(20),
+                                                1+randomGenerator.nextInt(3),map,track3LStartLocation,track3LEndLocation,track3Speed, railwayCrossings.get(2)));
+                                    else
+                                        track3Queue.add(new Car(carManufacturerName,carModelName,2000+randomGenerator.nextInt(20),
+                                                1+randomGenerator.nextInt(3),map,track3RStartLocation,track3REndLocation,track3Speed, railwayCrossings.get(2)));
+                                }
                                 else
-                                    track3Queue.add(new Car(carManufacturerName,carModelName,2000+randomGenerator.nextInt(20),
-                                            1+randomGenerator.nextInt(3),map,track3RStartLocation,track3REndLocation,track3Speed, railwayCrossings.get(2)));
-                            }
-                            else
-                            if (carOrVan==2)
-                            {
-                                if (leftOrRight==1)
-                                    track3Queue.add(new Truck(truckManufacturerName,truckModelName,2000+randomGenerator.nextInt(20),
-                                            3500+randomGenerator.nextInt(2500),map,track3LStartLocation,track3LEndLocation,track3Speed, railwayCrossings.get(2)));
-                                else
-                                    track3Queue.add(new Truck(truckManufacturerName,truckModelName,2000+randomGenerator.nextInt(20),
-                                            3500+randomGenerator.nextInt(2500),map,track3RStartLocation,track3REndLocation,track3Speed, railwayCrossings.get(2)));
+                                if (carOrVan==2)
+                                {
+                                    if (leftOrRight==1)
+                                        track3Queue.add(new Truck(truckManufacturerName,truckModelName,2000+randomGenerator.nextInt(20),
+                                                3500+randomGenerator.nextInt(2500),map,track3LStartLocation,track3LEndLocation,track3Speed, railwayCrossings.get(2)));
+                                    else
+                                        track3Queue.add(new Truck(truckManufacturerName,truckModelName,2000+randomGenerator.nextInt(20),
+                                                3500+randomGenerator.nextInt(2500),map,track3RStartLocation,track3REndLocation,track3Speed, railwayCrossings.get(2)));
 
-                            }
+                                }
 
                         }
 
@@ -120,9 +120,9 @@ public class CarBuilder implements Runnable
 
     public CarBuilder(int track1CarCount, int track2CarCount, int track3CarCount, int track1Speed, int track2Speed, int track3Speed, Tile[][] map, LinkedList<RailwayCrossing> railwayCrossings)
     {
-        this.track1CarCount = track1CarCount;
-        this.track2CarCount = track2CarCount;
-        this.track3CarCount = track3CarCount;
+        this.track1VehicleCount = track1CarCount;
+        this.track2VehicleCount = track2CarCount;
+        this.track3VehicleCount = track3CarCount;
 
         this.track1Speed = track1Speed;
         this.track2Speed = track2Speed;
@@ -153,20 +153,26 @@ public class CarBuilder implements Runnable
     public void run()
     {
         //initial creation of vehicles
-        {
-            for(int i = 0; i<track1CarCount;i++)
+
+            int numberOfCreatedVehiclesOnTrack1 = 0;
+            for(int i = 0; i<track1VehicleCount;i++)
             {
                 addVehicle(1);
+                numberOfCreatedVehiclesOnTrack1++;
             }
-            for(int i = 0; i<track2CarCount;i++)
+            int numberOfCreatedVehiclesOnTrack2 = 0;
+            for(int i = 0; i< track2VehicleCount; i++)
             {
                 addVehicle(2);
+                numberOfCreatedVehiclesOnTrack2++;
             }
-            for(int i = 0; i<track3CarCount;i++)
+            int numberOfCreatedVehiclesOnTrack3 = 0;
+            for(int i = 0; i< track3VehicleCount; i++)
             {
                 addVehicle(3);
+                numberOfCreatedVehiclesOnTrack3++;
             }
-        }
+
         while(isAlive)
         {
             try
@@ -194,6 +200,23 @@ public class CarBuilder implements Runnable
                     vehicleThread.start();
                 }
 
+                for(int i = numberOfCreatedVehiclesOnTrack1; i<track1VehicleCount;i++)
+                {
+                    addVehicle(1);
+                    numberOfCreatedVehiclesOnTrack1++;
+                }
+
+                for(int i = numberOfCreatedVehiclesOnTrack2; i< track2VehicleCount; i++)
+                {
+                    addVehicle(2);
+                    numberOfCreatedVehiclesOnTrack2++;
+                }
+
+                for(int i = numberOfCreatedVehiclesOnTrack3; i< track3VehicleCount; i++)
+                {
+                    addVehicle(3);
+                    numberOfCreatedVehiclesOnTrack3++;
+                }
 
             }
             catch (Exception ex)
@@ -202,5 +225,15 @@ public class CarBuilder implements Runnable
             }
         }
 
+    }
+    public void updateSpeed(int newTrack1Speed, int newTrack2Speed, int newTrack3Speed)
+    {
+        track1Speed = newTrack1Speed; track2Speed = newTrack2Speed; track3Speed = newTrack3Speed;
+    }
+    public void updateVehicleCount(int newTrack1VehicleCount, int newTrack2VehicleCount, int newTrack3VehicleCount)
+    {
+        track1VehicleCount = newTrack1VehicleCount;
+        track2VehicleCount = newTrack2VehicleCount;
+        track3VehicleCount = newTrack3VehicleCount;
     }
 }

@@ -1,7 +1,6 @@
 package Main;
 
 import FXML.MapController;
-import Tiles.Tile;
 import Util.Simulation;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -68,9 +67,6 @@ public class Main extends Application
     {
         return mapController;
     }
-
-
-
 
     public static void main(String[] args)
     {

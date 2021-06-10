@@ -7,6 +7,7 @@ import Tiles.TrainPassable;
 import Tiles.TrainTrackTile;
 import Trains.Locomotives.Locomotive;
 import Util.Coordinates;
+import Util.MovementHistory;
 import Util.MovementHistoryUnit;
 import Util.RailroadStation;
 import javafx.application.Platform;
@@ -19,21 +20,23 @@ import java.util.logging.Level;
 
 public class Train implements Runnable
 {
-    LinkedList<Connectable> parts;
+    private final LinkedList<Connectable> parts;
     private final double trainSpeed; //TODO fix speed
     private final String route;
     private int positionOnRoute;
+    private final String trainDescription;
     private RailroadStation currentStation;
     private TrainState currentState;
-    private Tile[][] map;
+    private final Tile[][] map;
     private final LinkedList<RailroadStation> stations;
     private boolean trainAlive;
     private int trainPartsWhichHaveLeftThePlatform, trainPartsWhichHaveEnteredThePlatform;
 
-    private final String movementFolder;
-    private LinkedList<MovementHistoryUnit> movementHistory;
 
-    public Train(LinkedList<Connectable> trainPieces, double trainSpeed, String route, Tile[][] map, LinkedList<RailroadStation> stations, String movementFolder)
+    private final String movementFolder;
+    private final LinkedList<MovementHistoryUnit> movementHistoryList;
+
+    public Train(LinkedList<Connectable> trainPieces, double trainSpeed, String route, Tile[][] map, LinkedList<RailroadStation> stations, String movementFolder, String trainDescription)
     {
         this.trainAlive = true;
         this.parts = trainPieces;
@@ -42,10 +45,11 @@ public class Train implements Runnable
         this.currentState = TrainState.Parked;
         this.positionOnRoute = 0;
         this.stations = stations;
+        this.trainDescription = trainDescription;
         trainPartsWhichHaveLeftThePlatform = 0;
         trainPartsWhichHaveEnteredThePlatform = 0;
         this.map = map;
-        this.movementHistory = new LinkedList<>();
+        this.movementHistoryList = new LinkedList<>();
         this.movementFolder = movementFolder;
 
         for(var x : stations) //initialize first station
@@ -90,10 +94,10 @@ public class Train implements Runnable
             return adjacentTracks;
     }
 
-    private boolean stuckInTraffic()
+    private boolean isStuckInTraffic()
     {
         LinkedList<Tile> adjacentTakenTracks = new LinkedList<>();
-        Locomotive trainHead = (Locomotive) parts.get(0); //first part of the train must be a locomotive
+        Connectable trainHead =  parts.get(0); //first part of the train must be a locomotive
 
         if (!(map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()] instanceof StationTile)
                 && map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()] !=null
@@ -125,18 +129,23 @@ public class Train implements Runnable
                 {
                     numberOfHits++;
                 }
-
             }
         }
         return !(numberOfHits==adjacentTakenTracks.size());
     }
 
-    public char nextStationName() throws ArrayIndexOutOfBoundsException
+    public char nextStationName()
     {
-        if(positionOnRoute+1<route.length())
-            return route.toCharArray()[positionOnRoute + 1];
-        else
-            return '!';
+        try
+        {
+            if (positionOnRoute + 1 < route.length())
+                return route.toCharArray()[positionOnRoute + 1];
+        }
+        catch(Exception ex)
+        {
+            Main.logger.log(Level.SEVERE, ex.getMessage(),ex);
+        }
+        return '!';
     }
 
     @Override
@@ -153,6 +162,17 @@ public class Train implements Runnable
                         try
                         {
                             this.currentState=TrainState.ExitingParking;
+                        }
+                        catch (Exception ex)
+                        {
+                            Main.logger.log(Level.SEVERE,ex.getMessage(),ex);
+                        }
+                    }
+                    else
+                    {
+                        try
+                        {
+                            Thread.sleep(1000);
                         }
                         catch (Exception ex)
                         {
@@ -210,7 +230,7 @@ public class Train implements Runnable
 
                 }
             }
-            movementHistory.add(new MovementHistoryUnit(getTrainHeadXCoordinate(),getTrainHeadYCoordinate()));
+            movementHistoryList.add(new MovementHistoryUnit(getTrainHeadXCoordinate(),getTrainHeadYCoordinate()));
         }
         serializeMovementHistory();
 
@@ -360,11 +380,11 @@ public class Train implements Runnable
         var freeAdjacentTracks = getAdjacentFreeTracks();
         if(freeAdjacentTracks.size()==0)
         {
-            if(stuckInTraffic())
+            if(isStuckInTraffic())
             {
                 return;
             }
-            //ako je iduca susjedna voz, onda sjeb!!!!!!!!!!!!!!!! fixD?
+
             currentState = TrainState.EnteringParking;
             return;
         }
@@ -432,7 +452,8 @@ public class Train implements Runnable
             FileOutputStream fout = new FileOutputStream(newFileName);
             ObjectOutputStream streamOut = new ObjectOutputStream(fout);
 
-            streamOut.writeObject(this.movementHistory);
+            MovementHistory movementHistory  = new MovementHistory(movementHistoryList, this.trainDescription);
+            streamOut.writeObject(movementHistory);
             streamOut.flush();
             streamOut.close();
 
@@ -447,9 +468,8 @@ public class Train implements Runnable
     {
         return parts.size();
     }
-
-    public LinkedList<MovementHistoryUnit> getMovementHistory()
+    public LinkedList<MovementHistoryUnit> getMovementHistoryList()
     {
-        return movementHistory;
+        return movementHistoryList;
     }
 }

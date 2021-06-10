@@ -1,5 +1,4 @@
 package Vehicles;
-
 import Main.Main;
 import Tiles.CarPassable;
 import Tiles.MovementSide;
@@ -7,7 +6,6 @@ import Tiles.Tile;
 import Util.Coordinates;
 import Util.RailwayCrossing;
 import javafx.application.Platform;
-
 import java.util.*;
 import java.util.logging.Level;
 
@@ -17,7 +15,7 @@ public abstract class Vehicle implements Runnable
     private final String manufacturer, model;
     private final int buildYear;
     private Tile entryPoint, exitPoint, currentPosition;
-    private Tile[][] map;
+    private final Tile[][] map;
     protected final int VehicleID;
     private int xCoordinate, yCoordinate;
     private LinkedList<Tile> pastLocations;
@@ -164,9 +162,6 @@ public abstract class Vehicle implements Runnable
         this.currentPosition = map[newX][newY];
         pastLocations.add(currentPosition);
         Platform.runLater(() -> map[xCoordinate][yCoordinate].putContent(this.toString()));
-
-
-        //TODO make cars on railway crossings check whether there is an incoming train
 
     }
 

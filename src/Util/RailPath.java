@@ -9,7 +9,7 @@ public class RailPath
 {
     LinkedList<Tile> tilesOnPath;
     String stationsConnected;
-    Tile[][] map;
+    final Tile[][] map;
 
     public RailPath(String stationsConnected, Tile[][] map)
     {

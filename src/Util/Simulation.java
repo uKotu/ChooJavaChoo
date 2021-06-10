@@ -12,13 +12,12 @@ import Vehicles.CarBuilder;
 
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileReader;
 import java.lang.reflect.InaccessibleObjectException;
 import java.nio.file.*;
 import java.util.LinkedList;
 import java.util.logging.Level;
-
-import static java.nio.file.StandardWatchEventKinds.*;
 
 public class Simulation
 {
@@ -31,8 +30,10 @@ public class Simulation
     private LinkedList<RailwayCrossing> railwayCrossings;
     private Tile[][] map;
     private final MapController mapController;
-    private int carCountTrack1, carCountTrack2, carCountTrack3;
-    private int track1SpeedLimit, track2SpeedLimit, track3SpeedLimit;
+    private volatile int carCountTrack1, carCountTrack2, carCountTrack3;
+    private volatile int track1SpeedLimit, track2SpeedLimit, track3SpeedLimit;
+
+    private CarBuilder carBuilder;
 
     public Simulation(MapController controller)
     {
@@ -43,27 +44,6 @@ public class Simulation
 
     }
 
-    private WatchKey startTrainWatcher()
-    {
-        WatchKey watchKey = null;
-
-        try
-        {
-            WatchService watchService = FileSystems.getDefault().newWatchService();
-            Path pathToTrainFolder = Paths.get(trainFolder);
-
-            watchKey = pathToTrainFolder.register(watchService,
-                    ENTRY_CREATE,
-                    ENTRY_MODIFY);
-
-        }
-        catch (Exception ex)
-        {
-            Main.logger.log(Level.SEVERE,ex.getMessage(),ex);
-        }
-        return watchKey;
-
-    }
     public void addTrain(String filename)
     {
         BufferedReader reader;
@@ -80,7 +60,7 @@ public class Simulation
 
             reader.close();
 
-            Train newTrain = new Train(trainParts,trainSpeed,trainRoute,map,stations, movementFolder);
+            Train newTrain = new Train(trainParts,trainSpeed,trainRoute,map,stations, movementFolder,trainDefinitionLine);
             trains.add(newTrain);
 
             Thread newlyCreatedTrainThread = new Thread(newTrain);
@@ -218,7 +198,7 @@ public class Simulation
         }
 
     }
-    private boolean configReader()
+    private boolean readConfiguration()
     {
         BufferedReader reader;
         try
@@ -259,34 +239,53 @@ public class Simulation
 
     }
 
+    public void vehicleConfigUpdate()
+    {
+        int oldCarCountTrack1 = carCountTrack1; int oldCarCountTrack2 = carCountTrack2; int oldCarCountTrack3 = carCountTrack3;
+        //int oldTrack1SpeedLimit = track1SpeedLimit; int oldTrack2SpeedLimit = track2SpeedLimit; int oldTrack3SpeedLimit = track3SpeedLimit;
+
+        readConfiguration();
+        if(oldCarCountTrack1>carCountTrack1)
+            carCountTrack1 = oldCarCountTrack1;
+        if(oldCarCountTrack2>carCountTrack2)
+            carCountTrack2 = oldCarCountTrack2;
+        if(oldCarCountTrack3>carCountTrack3)
+            carCountTrack3 = oldCarCountTrack3;
+
+        carBuilder.updateVehicleCount(carCountTrack1,carCountTrack2,carCountTrack3);
+        carBuilder.updateSpeed(track1SpeedLimit,track2SpeedLimit,track3SpeedLimit);
+
+
+    }
 
     public void start()
     {
         try
         {
-
             //read tracks configuration
-            if(!configReader())
+            if(!readConfiguration())
                 throw new InaccessibleObjectException("Reading config file failed!");
+
             //create railroad stations
             initializeRailroadStations();
             initializeRailwayCrossings();
 
             //start filewatcher
-            Watcher trainWatcher = new Watcher(trainFolder, this.getClass().getDeclaredMethod("addTrain",String.class),this);
+            Watcher trainWatcher = new Watcher(trainFolder, this.getClass().getDeclaredMethod("addTrain", String.class),this);
             trainWatcher.start();
-            CarBuilder carBuilder = new CarBuilder(
+
+            carBuilder = new CarBuilder(
                     carCountTrack1,carCountTrack2,carCountTrack3,
-                    track1SpeedLimit,track2SpeedLimit,track3SpeedLimit,map, railwayCrossings);
-            Thread carBuilderThread = new Thread(carBuilder);
+                    track1SpeedLimit,track2SpeedLimit,track3SpeedLimit, map, railwayCrossings);
+            Thread carBuilderThread = new Thread(carBuilder,"carBUILDER");
             carBuilderThread.start();
 
+            Watcher configWatcher = new Watcher(new File(configFile).getParent(), this.getClass().getDeclaredMethod("vehicleConfigUpdate",null),this);
+            Thread configWatcherThread = new Thread(configWatcher);
+            configWatcherThread.start();
 
-            //create trains/cars
-
-            //start trains
-            //start carts
         }
+
         catch (Exception ex)
         {
             Main.logger.log(Level.SEVERE,ex.getMessage(),ex);

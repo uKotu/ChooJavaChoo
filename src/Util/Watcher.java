@@ -9,11 +9,11 @@ import java.util.logging.Level;
 public class Watcher extends Thread
 {
 
-    private String filePath;
-    private Method updateMethod;
-    private Simulation sim;
+    private final String filePath;
+    private final Method updateMethod;
+    private final Simulation sim;
 
-    public Watcher(String filePath, Method updateMethod, Simulation sim)//, StandardWatchEventKinds watchEventKind)
+    public Watcher(String filePath, Method updateMethod, Simulation sim)
     {
         this.filePath=filePath;
         this.updateMethod=updateMethod;
@@ -42,8 +42,7 @@ public class Watcher extends Thread
                 {
                     sleep(50);
                 }
-                catch
-                (InterruptedException ex)
+                catch (InterruptedException ex)
                 {
                     Main.logger.log(Level.SEVERE,ex.getMessage(),ex);
                 }
@@ -53,8 +52,16 @@ public class Watcher extends Thread
                     WatchEvent<Path> ev = (WatchEvent<Path>) event;
                     String fileName = ev.context().toString().trim();
                     if (kind.equals(StandardWatchEventKinds.ENTRY_CREATE))
-                        sim.addTrain(filePath+"\\"+fileName);
+                    {
+                        updateMethod.invoke(sim,filePath+"\\"+fileName);
+                    }
+                    if(kind.equals(StandardWatchEventKinds.ENTRY_MODIFY) && fileName.equals("config.cfg"))
+                    {
+                     updateMethod.invoke(sim,null);
+                    }
+                        //sim.addTrain(filePath+"\\"+fileName);
                 }
+
                 boolean valid = key.reset();
                 if (!valid)
                 {
@@ -63,7 +70,8 @@ public class Watcher extends Thread
             }
 
         }
-        catch (Exception  ex) {
+        catch (Exception  ex)
+        {
             Main.logger.log(Level.SEVERE,ex.getMessage(),ex);
         }
     }

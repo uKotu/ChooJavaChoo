@@ -17,10 +17,20 @@ import java.util.logging.Level;
 
 public class TrainBuilder
 {
-
     //creates a train from a definition f.e
     // L.F.4000.D.E-C.25.P.B.15
     //Locomotive.Freight.4000hp.Drive.Electric - Carriage.25m.Passenger.Bed.15n
+    /*
+        L-Locomotive                        C-Carriage
+            F-Freight                           F-Freight.Weight
+            M-Maneuver                          S-Special
+            P-Passenger                         P-Passenger
+            U-Universal                             B-Bedded.NumberOfBeds
+            D-Drive type                            R-Restaurant.description
+                E-Electric                          S-Seated.numberOfSeats
+                S-Steam                             Z-SleepCarriage
+                D-Diesel
+     */
     public static LinkedList<Connectable> trainBuilder(String trainStringDefinition)
     {
         LinkedList<Connectable> trainParts = new LinkedList<>();
@@ -50,16 +60,19 @@ public class TrainBuilder
                     }
                     switch (characteristics[1])
                     {
-                        case "F" -> {
+                        case "F" ->
+                        {
                             trainParts.add(new FreightLocomotive(horsePower, powerType));
                             numberOfFreightLocomotives++;
                         }
                         case "M" -> trainParts.add(new ManeuverLocomotive(horsePower, powerType));
-                        case "P" -> {
+                        case "P" ->
+                        {
                             trainParts.add(new PassengerLocomotive(horsePower, powerType));
                             numberOfPassengerLocomotives++;
                         }
-                        case "U" -> {
+                        case "U" ->
+                        {
                             trainParts.add(new UniversalLocomotive(horsePower, powerType));
                             numberOfUniversalLocomotives++;
                         }
@@ -71,37 +84,41 @@ public class TrainBuilder
                     int carriageLength = Integer.parseInt(characteristics[1]);
                     switch (characteristics[2])
                     {
-                        case "F":
+                        case "F" ->
                         {
                             double allowedWeight = Double.parseDouble(characteristics[3]);
                             trainParts.add(new FreightCarriage(carriageLength, allowedWeight));
                             numberOfFreightCarriages++;
                             break;
                         }
-                        case "S":
+                        case "S" ->
                         {
                             trainParts.add(new SpecialCarriage(carriageLength));
                             break;
                         }
-                        case "P":
+                        case "P" ->
                         {
                             switch (characteristics[3])
                             {
-                                case "B" -> {
+                                case "B" ->
+                                {
                                     int numberOfBeds = Integer.parseInt(characteristics[4]);
                                     trainParts.add(new BedCarriage(carriageLength, numberOfBeds));
                                     numberOfPassengerCarriages++;
                                 }
-                                case "R" -> {
+                                case "R" ->
+                                {
                                     trainParts.add(new RestaurantCarriage(carriageLength, characteristics[4]));
                                     numberOfPassengerCarriages++;
                                 }
-                                case "S" -> {
+                                case "S" ->
+                                {
                                     int numberOfSeats = Integer.parseInt(characteristics[4]);
                                     trainParts.add(new SeatedCarriage(carriageLength, numberOfSeats));
                                     numberOfPassengerCarriages++;
                                 }
-                                case "Z" -> {
+                                case "Z" ->
+                                {
                                     trainParts.add(new SleepCarriage(carriageLength));
                                     numberOfPassengerCarriages++;
                                 }
@@ -109,8 +126,7 @@ public class TrainBuilder
                             }
                             break;
                         }
-                        default:
-                            throw new IllegalArgumentException("Unknown argument");
+                        default -> throw new IllegalArgumentException("Unknown argument");
                     }
                 } else
                     throw new IllegalArgumentException("Illegal argument");
@@ -120,8 +136,6 @@ public class TrainBuilder
                 throw new IllegalArgumentException("Mixing locomotives types not allowed");
             if ((numberOfFreightLocomotives > 0 && numberOfPassengerCarriages > 0) || (numberOfFreightLocomotives > 0 && numberOfPassengerCarriages > 0))
                 throw new IllegalArgumentException("Mixing locomotives types not allowed");
-
-
 
         }
         catch (Exception ex)
@@ -137,7 +151,7 @@ public class TrainBuilder
         try
         {
             speed = Double.parseDouble(speedDefinition);
-            if (speed < 0.5 || speed > 5)
+            if (speed < 1 || speed > 5)
                 throw new IllegalArgumentException("Illegal train speed");
 
         }
@@ -167,6 +181,5 @@ public class TrainBuilder
         return routeDefinition;
 
     }
-
 
 }
