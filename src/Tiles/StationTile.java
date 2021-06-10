@@ -13,4 +13,12 @@ public class StationTile extends Tile implements TrainPassable
         rectangle.setStroke(stationColor);
         rectangle.setFill(stationColor);
     }
+    public void setElectricityOn()
+    {
+        rectangle.setFill(Color.LIGHTGOLDENRODYELLOW);
+    }
+    public void setElectricityOff()
+    {
+        rectangle.setFill(stationColor);
+    }
 }

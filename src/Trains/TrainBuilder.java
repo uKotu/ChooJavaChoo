@@ -89,12 +89,10 @@ public class TrainBuilder
                             double allowedWeight = Double.parseDouble(characteristics[3]);
                             trainParts.add(new FreightCarriage(carriageLength, allowedWeight));
                             numberOfFreightCarriages++;
-                            break;
                         }
                         case "S" ->
                         {
                             trainParts.add(new SpecialCarriage(carriageLength));
-                            break;
                         }
                         case "P" ->
                         {
@@ -124,7 +122,6 @@ public class TrainBuilder
                                 }
                                 default -> throw new IllegalArgumentException("Unknown argument");
                             }
-                            break;
                         }
                         default -> throw new IllegalArgumentException("Unknown argument");
                     }
@@ -134,7 +131,8 @@ public class TrainBuilder
             }
             if (numberOfFreightLocomotives > 0 && numberOfPassengerLocomotives > 0)
                 throw new IllegalArgumentException("Mixing locomotives types not allowed");
-            if ((numberOfFreightLocomotives > 0 && numberOfPassengerCarriages > 0) || (numberOfFreightLocomotives > 0 && numberOfPassengerCarriages > 0))
+            if ((numberOfFreightLocomotives > 0 && numberOfPassengerCarriages > 0)
+                || (numberOfFreightLocomotives > 0 && numberOfPassengerCarriages > 0))
                 throw new IllegalArgumentException("Mixing locomotives types not allowed");
 
         }

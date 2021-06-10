@@ -21,7 +21,7 @@ import java.util.logging.Level;
 public class Train implements Runnable
 {
     private final LinkedList<Connectable> parts;
-    private final double trainSpeed; //TODO fix speed
+    private final double trainSpeed;
     private final String route;
     private int positionOnRoute;
     private final String trainDescription;
@@ -31,6 +31,7 @@ public class Train implements Runnable
     private final LinkedList<RailroadStation> stations;
     private boolean trainAlive;
     private int trainPartsWhichHaveLeftThePlatform, trainPartsWhichHaveEnteredThePlatform;
+    private final Power powerType;
 
 
     private final String movementFolder;
@@ -51,6 +52,8 @@ public class Train implements Runnable
         this.map = map;
         this.movementHistoryList = new LinkedList<>();
         this.movementFolder = movementFolder;
+
+        this.powerType = ((Locomotive)trainPieces.getFirst()).getPowerType();
 
         for(var x : stations) //initialize first station
         {
@@ -274,7 +277,16 @@ public class Train implements Runnable
 
             rear.setxCoordinate(front.getxCoordinate()); rear.setyCoordinate(front.getyCoordinate());
         }
-        Platform.runLater(() -> map[oldX][oldY].putContent(""));
+        Platform.runLater(() ->
+        {
+
+            map[oldX][oldY].putContent("");
+            if(powerType == Power.ELECTRIC)
+            {
+                ((TrainPassable)map[oldX][oldY]).setElectricityOff();
+            }
+        });
+
 
         var front = parts.get(trainPartsWhichHaveEnteredThePlatform);
         front.setxCoordinate(newX); front.setyCoordinate(newY);
@@ -285,7 +297,7 @@ public class Train implements Runnable
         if(trainPartsWhichHaveEnteredThePlatform == parts.size())
         {
             currentState = TrainState.Parked;
-            nextStation.addTrainToQueue(this);
+
             trainPartsWhichHaveEnteredThePlatform = 0;
             trainPartsWhichHaveLeftThePlatform = 0;
             positionOnRoute++;
@@ -293,6 +305,8 @@ public class Train implements Runnable
 
             if(positionOnRoute+1 == route.length())// +1 because the train started at a certain location
                 trainAlive = false;
+            if(trainAlive)
+                nextStation.addTrainToQueue(this);
             return;
         }
 
@@ -312,7 +326,7 @@ public class Train implements Runnable
         int newX, newY;
 
         RailroadStation nextStation = null;
-        for (var x: stations)
+        for (var x : stations)
         {
             if (x.getName().equals(nextStationName() + ""))
             {
@@ -321,16 +335,16 @@ public class Train implements Runnable
             }
         }
 
-        HashMap<Integer,Tile> tileDistanceMap = new HashMap<>();
+        HashMap<Integer, Tile> tileDistanceMap = new HashMap<>();
         //sort zero aka wait
         for (var track : getAdjacentFreeTracks())
         {
             int distance = Coordinates.calculateDistance(
-                    new Coordinates(track.getxCoordinate(),track.getyCoordinate()),
+                    new Coordinates(track.getxCoordinate(), track.getyCoordinate()),
                     new Coordinates(nextStation.getxCoordinate(), nextStation.getyCoordinate()));
-            tileDistanceMap.put(distance,track);
+            tileDistanceMap.put(distance, track);
         }
-        if (tileDistanceMap.size()==0)
+        if (tileDistanceMap.size() == 0)
         {
             //if there are no empty tracks to move the train to
             //slow down, aka wait
@@ -338,22 +352,39 @@ public class Train implements Runnable
         }
         var nextTileValueEntry = Collections.min(tileDistanceMap.entrySet(), Map.Entry.comparingByKey());
         var nextTile = nextTileValueEntry.getValue();
-        newX = nextTile.getxCoordinate(); newY = nextTile.getyCoordinate();
+        newX = nextTile.getxCoordinate();
+        newY = nextTile.getyCoordinate();
 
 
         for (int i = trainPartsWhichHaveLeftThePlatform; i > 0; i--)
         {
-            var front = parts.get(i-1);
+            var front = parts.get(i - 1);
             var rear = parts.get(i);
 
             //zasto ovo nije radilo
             // Platform.runLater(() -> map[rear.getxCoordinate()][rear.getyCoordinate()].putContent(""));
-            rear.setxCoordinate(front.getxCoordinate()); rear.setyCoordinate(front.getyCoordinate());
-            Platform.runLater(() -> map[rear.getxCoordinate()][rear.getyCoordinate()].putContent(rear.toString()));
+            rear.setxCoordinate(front.getxCoordinate());
+            rear.setyCoordinate(front.getyCoordinate());
+            Platform.runLater(() ->
+            {
+                map[rear.getxCoordinate()][rear.getyCoordinate()].putContent(rear.toString());
+                if (powerType == Power.ELECTRIC)
+                {
+                    ((TrainPassable) map[rear.getxCoordinate()][rear.getyCoordinate()]).setElectricityOn();
+                }
+            });
         }
 
-        parts.getFirst().setxCoordinate(newX); parts.getFirst().setyCoordinate(newY);
-        Platform.runLater(() -> map[parts.getFirst().getxCoordinate()][parts.getFirst().getyCoordinate()].putContent(parts.getFirst().toString()));
+        parts.getFirst().setxCoordinate(newX);
+        parts.getFirst().setyCoordinate(newY);
+        Platform.runLater(() ->
+        {
+            map[parts.getFirst().getxCoordinate()][parts.getFirst().getyCoordinate()].putContent(parts.getFirst().toString());
+            if(powerType== Power.ELECTRIC)
+            {
+                ((TrainPassable) map[parts.getFirst().getxCoordinate()][parts.getFirst().getyCoordinate()]).setElectricityOn();
+            }
+        });
         trainPartsWhichHaveLeftThePlatform++;
 
         if(trainPartsWhichHaveLeftThePlatform==parts.size())
@@ -413,11 +444,20 @@ public class Train implements Runnable
             var rear = parts.get(i);
 
             int oldX, oldY;
-            //Platform.runLater(() -> map[rear.getxCoordinate()][rear.getyCoordinate()].putContent(""));
+
             oldX= rear.getxCoordinate(); oldY = rear.getyCoordinate();
             rear.setxCoordinate(front.getxCoordinate()); rear.setyCoordinate(front.getyCoordinate());
 
-            Platform.runLater(() -> map[oldX][oldY].putContent(""));
+            Platform.runLater(() ->
+            {
+                map[oldX][oldY].putContent("");
+                if(powerType == Power.ELECTRIC)
+                {
+                    ((TrainPassable)map[oldX][oldY]).setElectricityOff();
+                }
+            });
+
+
         }
 
         //move the train leading part to new coordinates
@@ -425,10 +465,15 @@ public class Train implements Runnable
         front.setxCoordinate(newX); front.setyCoordinate(newY);
         Platform.runLater(() ->
         {
-            for(var x :parts)
+            for(var part :parts)
             {
                 //draw all train parts
-                map[x.getxCoordinate()][x.getyCoordinate()].putContent(x.toString());
+                map[part.getxCoordinate()][part.getyCoordinate()].putContent(part.toString());
+                //((TrainPassable) map[part.getxCoordinate()][part.getyCoordinate()]).setElectricityOn();
+                if(powerType == Power.ELECTRIC)
+                {
+                    ((TrainPassable) map[part.getxCoordinate()][part.getyCoordinate()]).setElectricityOn();
+                }
             }
         });
 

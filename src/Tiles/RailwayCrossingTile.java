@@ -20,4 +20,13 @@ public class RailwayCrossingTile extends TrainTrackTile implements TrainPassable
     {
         return movementSide;
     }
+
+    public void setElectricityOn()
+    {
+        rectangle.setFill(Color.LIGHTGOLDENRODYELLOW);
+    }
+    public void setElectricityOff()
+    {
+        rectangle.setFill(carTrackColor);
+    }
 }

@@ -19,7 +19,7 @@ public class MovementHistoryWindow
     @FXML
     public void initialize()
     {
-        textArea.setDisable(true);
+        textArea.setEditable(false);
 
         FileChooser filePicker = new FileChooser();
         Stage stage = new Stage();

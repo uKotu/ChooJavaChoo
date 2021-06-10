@@ -15,6 +15,7 @@ public abstract class Locomotive implements Connectable
     {
         this.locomotiveID=++locomotiveCount;
         this.power = power;
+        this.powerType = powerType;
 
 
     }
@@ -45,5 +46,10 @@ public abstract class Locomotive implements Connectable
     public String toString()
     {
         return "L"+locomotiveID;
+    }
+
+    public Power getPowerType()
+    {
+        return powerType;
     }
 }
