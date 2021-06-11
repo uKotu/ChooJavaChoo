@@ -25,7 +25,7 @@ public abstract class Vehicle implements Runnable
     private boolean isAlive;
 
 
-    Vehicle(String type, String model, int buildYear, Tile[][] map, Tile entryPoint, Tile exitPoint, int allowedSpeedOnRoad, RailwayCrossing railwayCrossing)
+    Vehicle(String type, String model, int buildYear, Tile[][] map, Tile entryPoint, Tile exitPoint, double allowedSpeedOnRoad, RailwayCrossing railwayCrossing)
     {
         this.manufacturer = type;
         this.model = model;
@@ -163,6 +163,11 @@ public abstract class Vehicle implements Runnable
         pastLocations.add(currentPosition);
         Platform.runLater(() -> map[xCoordinate][yCoordinate].putContent(this.toString()));
 
+    }
+
+    public Tile getEntryPoint()
+    {
+        return entryPoint;
     }
 
     public MovementSide getMovementSide()

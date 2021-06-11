@@ -39,6 +39,8 @@ public class Train implements Runnable
 
     public Train(LinkedList<Connectable> trainPieces, double trainSpeed, String route, Tile[][] map, LinkedList<RailroadStation> stations, String movementFolder, String trainDescription)
     {
+        if(trainPieces==null || trainSpeed < 1 || route.equals(""))
+            throw new IllegalArgumentException("Cant create a train, illegal arguments given");
         this.trainAlive = true;
         this.parts = trainPieces;
         this.trainSpeed = trainSpeed;
@@ -248,19 +250,12 @@ public class Train implements Runnable
     and moving it to the one whose distance is the closest to its next station
      */
 
-    private synchronized void enterParking()
+
+    private  void enterParking()
     {
         int newX, newY;
 
-        RailroadStation nextStation = null;
-        for (var x: stations)
-        {
-            if (x.getName().equals(nextStationName() + ""))
-            {
-                nextStation = x;
-                break;
-            }
-        }
+        RailroadStation nextStation = getNextStation();
 
 
         Tile nextTile = nextStation.findClosestEntrance(this);
@@ -312,6 +307,7 @@ public class Train implements Runnable
 
         Platform.runLater(() ->
         {
+
             for(int i = 0; i < parts.size()-trainPartsWhichHaveEnteredThePlatform;i++)
             {
                 //draw all train parts which have not entered the platform
@@ -321,19 +317,12 @@ public class Train implements Runnable
 
 
     }
-    private synchronized void exitParking()
+    private  void exitParking()
     {
         int newX, newY;
 
-        RailroadStation nextStation = null;
-        for (var x : stations)
-        {
-            if (x.getName().equals(nextStationName() + ""))
-            {
-                nextStation = x;
-                break;
-            }
-        }
+        RailroadStation nextStation = getNextStation();
+
 
         HashMap<Integer, Tile> tileDistanceMap = new HashMap<>();
         //sort zero aka wait
@@ -394,31 +383,22 @@ public class Train implements Runnable
         }
 
     }
-    private synchronized void move()
+    private  void move()
     {
         int newX, newY;
-        RailroadStation nextStation = null;
-        for (var x: stations)
-        {
-            if (x.getName().equals(nextStationName()+""))
-            {
-                nextStation = x;
-                break;
-            }
-        }
+        RailroadStation nextStation = getNextStation();
 
-        HashMap<Integer,Tile> tileDistanceMap = new HashMap<>();
-        var freeAdjacentTracks = getAdjacentFreeTracks();
-        if(freeAdjacentTracks.size()==0)
+        if(getAdjacentFreeTracks().size()==0)
         {
             if(isStuckInTraffic())
             {
                 return;
             }
-
             currentState = TrainState.EnteringParking;
             return;
         }
+
+        HashMap<Integer,Tile> tileDistanceMap = new HashMap<>();
         for (var track : getAdjacentFreeTracks())
         {
             int distance = Coordinates.calculateDistance(
@@ -457,7 +437,6 @@ public class Train implements Runnable
                 }
             });
 
-
         }
 
         //move the train leading part to new coordinates
@@ -477,6 +456,20 @@ public class Train implements Runnable
             }
         });
 
+    }
+
+    private RailroadStation getNextStation()
+    {
+        RailroadStation nextStation = null;
+        for (var x: stations)
+        {
+            if (x.getName().equals(nextStationName() + ""))
+            {
+                nextStation = x;
+                break;
+            }
+        }
+        return nextStation;
     }
     public int getTrainHeadXCoordinate()
     {

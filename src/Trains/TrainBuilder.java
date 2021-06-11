@@ -132,15 +132,18 @@ public class TrainBuilder
             if (numberOfFreightLocomotives > 0 && numberOfPassengerLocomotives > 0)
                 throw new IllegalArgumentException("Mixing locomotives types not allowed");
             if ((numberOfFreightLocomotives > 0 && numberOfPassengerCarriages > 0)
-                || (numberOfFreightLocomotives > 0 && numberOfPassengerCarriages > 0))
+                || (numberOfPassengerLocomotives > 0 && numberOfFreightCarriages > 0))
                 throw new IllegalArgumentException("Mixing locomotives types not allowed");
 
+            return trainParts;
         }
         catch (Exception ex)
         {
             Main.logger.log(Level.SEVERE, ex.getMessage(), ex);
+
         }
-        return trainParts;
+        return null;
+
     }
 
     public static double speedBuilder(String speedDefinition)
@@ -161,14 +164,15 @@ public class TrainBuilder
 
     }
 
-    public static String routeBuilder(String routeDefinition)
+    public static String routeValidator(String routeDefinition)
     {
         char[] routeDef = routeDefinition.toCharArray();
+        String definedStations = "ABCDE";
         for(char x : routeDef)
         {
             try
             {
-                if (x != 'A' && x != 'B' && x != 'C' && x != 'D' && x != 'E')
+                if (!definedStations.contains(x+""))
                     throw new IllegalArgumentException("Unknown route");
             }
             catch(Exception ex)
@@ -176,8 +180,69 @@ public class TrainBuilder
                 Main.logger.log(Level.SEVERE, ex.getMessage(), ex);
             }
         }
-        return routeDefinition;
+        for(int i = 0;i<routeDefinition.length()-2;i++)
+        {
+            if(routeDefinition.toCharArray()[i]=='A')
+            {
+                if(i==0)
+                {
+                    if(routeDefinition.toCharArray()[i+1]!='B')
+                    {
+                        return "";
+                    }
+                }
+                else
+                    if(routeDefinition.toCharArray()[i-1] != 'B' || routeDefinition.toCharArray()[i+1]!='B')
+                        return "";
+            }
+            if(routeDefinition.toCharArray()[i]=='B')
+            {
+                if(i==0)
+                {
+                    if(routeDefinition.toCharArray()[i+1]!='A' && routeDefinition.toCharArray()[i+1]!='C')
+                    {
+                        return "";
+                    }
+                }
+                else
+                if((routeDefinition.toCharArray()[i-1] != 'A' && routeDefinition.toCharArray()[i-1]!='C')
+                || (routeDefinition.toCharArray()[i+1] != 'A' && routeDefinition.toCharArray()[i+1]!='C'))
+                {
+                    return "";
+                }
+            }
+            if(routeDefinition.toCharArray()[i]=='C')
+            {
+                if(i==0)
+                {
+                    if(routeDefinition.toCharArray()[i+1]!='B' && routeDefinition.toCharArray()[i+1]!='D' && routeDefinition.toCharArray()[i+1]!='E')
+                    {
+                        return "";
+                    }
+                }
+                else
+                if((routeDefinition.toCharArray()[i - 1] != 'B' && routeDefinition.toCharArray()[i - 1] != 'D' && routeDefinition.toCharArray()[i - 1] != 'E')
+                || (routeDefinition.toCharArray()[i + 1] != 'B' && routeDefinition.toCharArray()[i + 1] != 'D' && routeDefinition.toCharArray()[i + 1] != 'E'))
+                {
+                    return "";
+                }
+            }
+            if(routeDefinition.toCharArray()[i]=='E' || routeDefinition.toCharArray()[i]=='D')
+            {
+                if(i==0)
+                {
+                    if(routeDefinition.toCharArray()[i+1]!='C')
+                    {
+                        return "";
+                    }
+                }
+                else
+                if(routeDefinition.toCharArray()[i-1] != 'C' || routeDefinition.toCharArray()[i+i]!='C')
+                    return "";
+            }
 
+        }
+        return routeDefinition;
     }
 
 }

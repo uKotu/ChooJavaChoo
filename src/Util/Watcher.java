@@ -57,9 +57,8 @@ public class Watcher extends Thread
                     }
                     if(kind.equals(StandardWatchEventKinds.ENTRY_MODIFY) && fileName.equals("config.cfg"))
                     {
-                     updateMethod.invoke(sim,null);
+                        updateMethod.invoke(sim,null);
                     }
-                        //sim.addTrain(filePath+"\\"+fileName);
                 }
 
                 boolean valid = key.reset();
@@ -73,6 +72,7 @@ public class Watcher extends Thread
         catch (Exception  ex)
         {
             Main.logger.log(Level.SEVERE,ex.getMessage(),ex);
+
         }
     }
 

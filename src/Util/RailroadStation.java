@@ -50,22 +50,25 @@ public class RailroadStation
         }
         return false;
     }
-    private synchronized boolean noIncomingTrainsOnTheRailPath(RailPath railPath)
+    private boolean noIncomingTrainsOnTheRailPath(RailPath railPath)
     {
         //check all trains which are on the railpath for their next station
         //if their next station is the current station, there is an incoming train
-        for(Train train: trains)
+        synchronized (railPath.map)
         {
-            for(Tile tile:railPath.tilesOnPath)
+            for (Train train : trains)
             {
-                if(tile.getxCoordinate()==train.getTrainHeadXCoordinate() && tile.getyCoordinate()==train.getTrainHeadYCoordinate())
+                for (Tile tile : railPath.tilesOnPath)
                 {
-                    if((train.nextStationName()+"").equals(this.name))
+                    if (tile.getxCoordinate() == train.getTrainHeadXCoordinate() && tile.getyCoordinate() == train.getTrainHeadYCoordinate())
                     {
-                        return false;
+                        if ((train.nextStationName() + "").equals(this.name))
+                        {
+                            return false;
+                        }
                     }
-                }
 
+                }
             }
         }
         return true;

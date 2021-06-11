@@ -12,7 +12,7 @@ import java.util.logging.Level;
 public class CarBuilder implements Runnable
 {
     private volatile int track1VehicleCount, track2VehicleCount, track3VehicleCount;
-    private volatile int track1Speed, track2Speed, track3Speed;
+    private volatile double track1Speed, track2Speed, track3Speed;
     Tile track1LStartLocation, track2LStartLocation, track3LStartLocation,
             track1RStartLocation, track2RStartLocation, track3RStartLocation;
 
@@ -180,21 +180,36 @@ public class CarBuilder implements Runnable
                 Thread.sleep(2000);
                 if(!track1Queue.isEmpty())
                 {
-                    Vehicle vehicle = track1Queue.pollFirst();
+                    Vehicle vehicle = track1Queue.peekFirst();
+                    if(vehicle.getEntryPoint().isTaken())
+                    {
+                        continue;
+                    }
+                    vehicle = track1Queue.pollFirst();
                     vehicle.setAlive(true);
                     Thread vehicleThread = new Thread(vehicle, vehicle.toString());
                     vehicleThread.start();
                 }
                 if(!track2Queue.isEmpty())
                 {
-                    Vehicle vehicle = track2Queue.pollFirst();
+                    Vehicle vehicle = track2Queue.peekFirst();
+                    if(vehicle.getEntryPoint().isTaken())
+                    {
+                        continue;
+                    }
+                    vehicle = track2Queue.pollFirst();
                     vehicle.setAlive(true);
                     Thread vehicleThread = new Thread(vehicle, vehicle.toString());
                     vehicleThread.start();
                 }
                 if(!track3Queue.isEmpty())
                 {
-                    Vehicle vehicle = track3Queue.pollFirst();
+                    Vehicle vehicle = track3Queue.peekFirst();
+                    if(vehicle.getEntryPoint().isTaken())
+                    {
+                        continue;
+                    }
+                    vehicle = track3Queue.pollFirst();
                     vehicle.setAlive(true);
                     Thread vehicleThread = new Thread(vehicle, vehicle.toString());
                     vehicleThread.start();
@@ -226,7 +241,7 @@ public class CarBuilder implements Runnable
         }
 
     }
-    public void updateSpeed(int newTrack1Speed, int newTrack2Speed, int newTrack3Speed)
+    public void updateSpeed(double newTrack1Speed, double newTrack2Speed, double newTrack3Speed)
     {
         track1Speed = newTrack1Speed; track2Speed = newTrack2Speed; track3Speed = newTrack3Speed;
     }

@@ -23,12 +23,12 @@ public class Simulation
 {
     private final static String configFile = "C:\\Users\\Lenovo\\IdeaProjects\\ChooJavaChoo\\config.cfg";
     private String trainFolder = "";
-    private String movementFolder = "";
+    private static String movementFolder = "";
 
-    private LinkedList<Train> trains;
-    private LinkedList<RailroadStation> stations;
+    private final LinkedList<Train> trains;
+    private final LinkedList<RailroadStation> stations;
     private LinkedList<RailwayCrossing> railwayCrossings;
-    private Tile[][] map;
+    private final Tile[][] map;
     private final MapController mapController;
     private volatile int carCountTrack1, carCountTrack2, carCountTrack3;
     private volatile int track1SpeedLimit, track2SpeedLimit, track3SpeedLimit;
@@ -56,7 +56,7 @@ public class Simulation
 
             LinkedList<Connectable> trainParts = TrainBuilder.trainBuilder(trainDefinitionLine);
             double trainSpeed = TrainBuilder.speedBuilder(trainSpeedLine);
-            trainRoute = TrainBuilder.routeBuilder(trainRoute);
+            trainRoute = TrainBuilder.routeValidator(trainRoute);
 
             reader.close();
 
@@ -226,6 +226,8 @@ public class Simulation
             trainFolder = reader.readLine();//trainFolder
             movementFolder = reader.readLine();
 
+            reader.close();
+
             return Files.isDirectory(Path.of(trainFolder)) && Files.isDirectory(Path.of(movementFolder));
             //success while reading config file
 
@@ -266,11 +268,11 @@ public class Simulation
             if(!readConfiguration())
                 throw new InaccessibleObjectException("Reading config file failed!");
 
-            //create railroad stations
+            //create railroad stations and crossings
             initializeRailroadStations();
             initializeRailwayCrossings();
 
-            //start filewatcher
+            //start file watchers
             Watcher trainWatcher = new Watcher(trainFolder, this.getClass().getDeclaredMethod("addTrain", String.class),this);
             trainWatcher.start();
 
