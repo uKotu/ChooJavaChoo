@@ -2,7 +2,7 @@ package Tiles;
 
 import javafx.scene.paint.Color;
 
-public class CarTrackTile extends Tile implements CarPassable
+public class VehicleTrackTile extends Tile implements CarPassable
 {
     //insert movement direction
     MovementSide movementSide;
@@ -11,7 +11,7 @@ public class CarTrackTile extends Tile implements CarPassable
     private double allowedSpeed;
 
 
-    public CarTrackTile(String tileContent, double x, double y, double width, double height, MovementSide movementSide)
+    public VehicleTrackTile(String tileContent, double x, double y, double width, double height, MovementSide movementSide)
     {
         super(tileContent, x, y, width, height);
         rectangle.setStroke(carTrackColor);

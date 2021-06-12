@@ -29,7 +29,7 @@ public class CarBuilder implements Runnable
     private void addVehicle(int carTrackNumber)
     {
         if(carTrackNumber>3 || carTrackNumber<0)
-            throw new IllegalArgumentException("CarTrackTile not defined");
+            throw new IllegalArgumentException("VehicleTrackTile not defined");
         try
         {
             String carManufacturerName = "BMW";
@@ -186,9 +186,12 @@ public class CarBuilder implements Runnable
                         continue;
                     }
                     vehicle = track1Queue.pollFirst();
-                    vehicle.setAlive(true);
-                    Thread vehicleThread = new Thread(vehicle, vehicle.toString());
-                    vehicleThread.start();
+                    if (vehicle != null)
+                    {
+                        vehicle.setAlive(true);
+                        Thread vehicleThread = new Thread(vehicle, vehicle.toString());
+                        vehicleThread.start();
+                    }
                 }
                 if(!track2Queue.isEmpty())
                 {
@@ -198,9 +201,12 @@ public class CarBuilder implements Runnable
                         continue;
                     }
                     vehicle = track2Queue.pollFirst();
-                    vehicle.setAlive(true);
-                    Thread vehicleThread = new Thread(vehicle, vehicle.toString());
-                    vehicleThread.start();
+                    if(vehicle != null)
+                    {
+                        vehicle.setAlive(true);
+                        Thread vehicleThread = new Thread(vehicle, vehicle.toString());
+                        vehicleThread.start();
+                    }
                 }
                 if(!track3Queue.isEmpty())
                 {
@@ -210,9 +216,12 @@ public class CarBuilder implements Runnable
                         continue;
                     }
                     vehicle = track3Queue.pollFirst();
-                    vehicle.setAlive(true);
-                    Thread vehicleThread = new Thread(vehicle, vehicle.toString());
-                    vehicleThread.start();
+                    if(vehicle!=null)
+                    {
+                        vehicle.setAlive(true);
+                        Thread vehicleThread = new Thread(vehicle, vehicle.toString());
+                        vehicleThread.start();
+                    }
                 }
 
                 for(int i = numberOfCreatedVehiclesOnTrack1; i<track1VehicleCount;i++)

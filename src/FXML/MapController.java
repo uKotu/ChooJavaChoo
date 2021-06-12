@@ -14,6 +14,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
 import java.util.LinkedList;
+import java.util.Objects;
 import java.util.logging.Level;
 
 public class MapController
@@ -40,34 +41,34 @@ public class MapController
     @FXML
     public void initialize()
     {
-        ////////car tracks///
+        ////////vehicle tracks///
         {
             //left bottom corner cartrack
 
             for (int i = 0, j = 20; i <= 8; i++)
             {
-                CarTrackTile r = new CarTrackTile("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
+                VehicleTrackTile r = new VehicleTrackTile("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
 
                 addTile(r,i,j);//j,i
             }
 
             for (int i = 0, j = 21; i < 7; i++)
             {
-                CarTrackTile r = new CarTrackTile("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
+                VehicleTrackTile r = new VehicleTrackTile("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
 
                 addTile(r,i,j);
             }
 
             for (int i = 8, j = 20; j < 30; j++)
             {
-                CarTrackTile r = new CarTrackTile("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
+                VehicleTrackTile r = new VehicleTrackTile("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
 
                 addTile(r,i,j);
             }
 
             for (int i = 7, j = 21; j < 30; j++)
             {
-                CarTrackTile r = new CarTrackTile("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
+                VehicleTrackTile r = new VehicleTrackTile("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
 
                 addTile(r,i,j);
             }
@@ -76,14 +77,14 @@ public class MapController
 
             for (int i = 14, j = 0; j < 30; j++)
             {
-                CarTrackTile r = new CarTrackTile("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
+                VehicleTrackTile r = new VehicleTrackTile("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
 
                 addTile(r,i,j);
             }
 
             for (int i=13, j = 0; j < 30; j++)
             {
-                CarTrackTile r = new CarTrackTile("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
+                VehicleTrackTile r = new VehicleTrackTile("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
 
                 addTile(r, i, j);
             }
@@ -91,28 +92,28 @@ public class MapController
 
             for (int i=21, j = 20; j < 30; j++)
             {
-                CarTrackTile r = new CarTrackTile("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
+                VehicleTrackTile r = new VehicleTrackTile("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
 
                 addTile(r,i,j);
             }
 
             for (int i=22, j = 21; j < 30; j++)
             {
-                CarTrackTile r = new CarTrackTile("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
+                VehicleTrackTile r = new VehicleTrackTile("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
 
                 addTile(r,i,j);
             }
 
             for (int i = 22, j = 21; i < 30; i++)
             {
-                CarTrackTile r = new CarTrackTile("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
+                VehicleTrackTile r = new VehicleTrackTile("", i, j, tileWidth, tileHeight, MovementSide.RIGHT);
 
                 addTile(r,i,j);
             }
 
             for (int i = 21,j = 20; i < 30; i++)
             {
-                CarTrackTile r = new CarTrackTile("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
+                VehicleTrackTile r = new VehicleTrackTile("", i, j, tileWidth, tileHeight, MovementSide.LEFT);
 
                 addTile(r,i,j);
             }
@@ -365,7 +366,7 @@ public class MapController
         Parent root;
         try
         {
-            root = FXMLLoader.load(getClass().getClassLoader().getResource("FXML/MovementHistory.fxml"));
+            root = FXMLLoader.load(Objects.requireNonNull(getClass().getClassLoader().getResource("FXML/MovementHistory.fxml")));
             Stage stage = new Stage();
             stage.setTitle("Movement history");
             stage.setScene(new Scene(root, 450, 450));
