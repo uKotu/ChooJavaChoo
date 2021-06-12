@@ -2,6 +2,8 @@ package Trains;
 
 public class ElectricBarrier implements Connectable
 {
+    //used to act as a display of electricity behind and
+    //in front of the locomotive with electric power
     private int xCoordinate, yCoordinate;
 
     @Override

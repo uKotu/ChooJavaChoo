@@ -7,10 +7,7 @@ import Trains.Carriages.Passenger.RestaurantCarriage;
 import Trains.Carriages.Passenger.SeatedCarriage;
 import Trains.Carriages.Passenger.SleepCarriage;
 import Trains.Carriages.SpecialCarriage;
-import Trains.Locomotives.FreightLocomotive;
-import Trains.Locomotives.ManeuverLocomotive;
-import Trains.Locomotives.PassengerLocomotive;
-import Trains.Locomotives.UniversalLocomotive;
+import Trains.Locomotives.*;
 
 import java.util.LinkedList;
 import java.util.logging.Level;
@@ -18,8 +15,8 @@ import java.util.logging.Level;
 public class TrainBuilder
 {
     //creates a train from a definition f.e
-    // L.F.4000.D.E-C.25.P.B.15
-    //Locomotive.Freight.4000hp.Drive.Electric - Carriage.25m.Passenger.Bed.15n
+    // L.P.4000.D.E-C.25.P.B.15
+    //Locomotive.Passenger.4000hp.Drive.Electric - Carriage.25m.Passenger.Bed.15n
     /*
         L-Locomotive                        C-Carriage
             F-Freight                           F-Freight.Weight
@@ -35,8 +32,11 @@ public class TrainBuilder
     {
         LinkedList<Connectable> trainParts = new LinkedList<>();
 
-        int numberOfPassengerLocomotives = 0, numberOfUniversalLocomotives = 0, numberOfFreightLocomotives = 0;
-        int numberOfPassengerCarriages = 0, numberOfFreightCarriages = 0;
+        int numberOfPassengerLocomotives = 0, numberOfUniversalLocomotives = 0, numberOfFreightLocomotives = 0, numberOfManueverLocomotives = 0;
+        int numberOfPassengerCarriages = 0, numberOfFreightCarriages = 0, numberOfSpecialCarriages = 0;
+
+        int numberOfDieselPoweredLocomotives = 0, numberOfSteamPoweredLocomotives = 0, numberOfElectricPoweredLocomotives = 0;
+
         String[] trainPartsDefinition = trainStringDefinition.split("-");
         try
         {
@@ -52,9 +52,21 @@ public class TrainBuilder
                     {
                         switch (characteristics[4])
                         {
-                            case "E" -> powerType = Power.ELECTRIC;
-                            case "S" -> powerType = Power.STEAM;
-                            case "D" -> powerType = Power.DIESEL;
+                            case "E" ->
+                                    {
+                                        powerType = Power.ELECTRIC;
+                                        numberOfElectricPoweredLocomotives++;
+                                    }
+                            case "S" ->
+                                    {
+                                        powerType = Power.STEAM;
+                                        numberOfSteamPoweredLocomotives++;
+                                    }
+                            case "D" ->
+                                    {
+                                        powerType = Power.DIESEL;
+                                        numberOfDieselPoweredLocomotives++;
+                                    }
                             default -> throw new IllegalStateException("Unexpected value at power type generation: " + characteristics[4]);
                         }
                     }
@@ -65,7 +77,11 @@ public class TrainBuilder
                             trainParts.add(new FreightLocomotive(horsePower, powerType));
                             numberOfFreightLocomotives++;
                         }
-                        case "M" -> trainParts.add(new ManeuverLocomotive(horsePower, powerType));
+                        case "M" ->
+                        {
+                            trainParts.add(new ManeuverLocomotive(horsePower, powerType));
+                            numberOfManueverLocomotives++;
+                        }
                         case "P" ->
                         {
                             trainParts.add(new PassengerLocomotive(horsePower, powerType));
@@ -86,13 +102,14 @@ public class TrainBuilder
                     {
                         case "F" ->
                         {
-                            double allowedWeight = Double.parseDouble(characteristics[3]);
+                            int allowedWeight = Integer.parseInt(characteristics[3]);
                             trainParts.add(new FreightCarriage(carriageLength, allowedWeight));
                             numberOfFreightCarriages++;
                         }
                         case "S" ->
                         {
                             trainParts.add(new SpecialCarriage(carriageLength));
+                            numberOfSpecialCarriages++;
                         }
                         case "P" ->
                         {
@@ -125,22 +142,38 @@ public class TrainBuilder
                         }
                         default -> throw new IllegalArgumentException("Unknown argument");
                     }
-                } else
+                }
+                else
                     throw new IllegalArgumentException("Illegal argument");
 
             }
-            if (numberOfFreightLocomotives > 0 && numberOfPassengerLocomotives > 0)
+            if ((numberOfFreightLocomotives > 0 && numberOfPassengerLocomotives > 0)
+            || (numberOfFreightLocomotives > 0 && numberOfManueverLocomotives>0)
+            || (numberOfManueverLocomotives > 0 && numberOfPassengerLocomotives>0))
                 throw new IllegalArgumentException("Mixing locomotives types not allowed");
-            if ((numberOfFreightLocomotives > 0 && numberOfPassengerCarriages > 0)
-                || (numberOfPassengerLocomotives > 0 && numberOfFreightCarriages > 0))
-                throw new IllegalArgumentException("Mixing locomotives types not allowed");
+
+            if ((numberOfFreightLocomotives > 0) && (numberOfPassengerCarriages > 0 || numberOfSpecialCarriages>0)
+                || ((numberOfPassengerLocomotives > 0) && (numberOfFreightCarriages > 0 || numberOfSpecialCarriages > 0))
+                || ((numberOfManueverLocomotives > 0) && (numberOfFreightCarriages > 0 || numberOfPassengerCarriages > 0)))
+                throw new IllegalArgumentException("Mixing locomotives with different carriage types not allowed");
+
+            if((numberOfElectricPoweredLocomotives>0 && numberOfDieselPoweredLocomotives>0)
+            || (numberOfElectricPoweredLocomotives>0 && numberOfSteamPoweredLocomotives>0)
+            || (numberOfSteamPoweredLocomotives>0 && numberOfDieselPoweredLocomotives>0))
+                throw new IllegalArgumentException("Mixing engine types not allowed");
+
+            if(numberOfSpecialCarriages>0 && (numberOfFreightLocomotives>0 || numberOfPassengerLocomotives>0))
+                throw new IllegalArgumentException("Special carriage must be run by a maneuver or a universal locomotive");
+
+            //first part of the train must be a locomotive
+            if (!(trainParts.getFirst() instanceof Locomotive))
+                throw new IllegalArgumentException("Locomotive must be the first part of the train");
 
             return trainParts;
         }
         catch (Exception ex)
         {
             Main.logger.log(Level.SEVERE, ex.getMessage(), ex);
-
         }
         return null;
 

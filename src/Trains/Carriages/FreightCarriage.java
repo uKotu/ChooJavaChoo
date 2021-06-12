@@ -2,9 +2,9 @@ package Trains.Carriages;
 
 public class FreightCarriage extends Carriage
 {
-    private double maximumWeightAllowed;
+    private int maximumWeightAllowed;
 
-    public FreightCarriage(int carriageLength, double maximumWeightAllowed)
+    public FreightCarriage(int carriageLength, int maximumWeightAllowed)
     {
         super(carriageLength);
         this.maximumWeightAllowed = maximumWeightAllowed;
