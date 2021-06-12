@@ -23,8 +23,8 @@ public class Simulation
 {
     private final static String configFile = "C:\\Users\\Lenovo\\IdeaProjects\\ChooJavaChoo\\config.cfg";
     private String trainFolder = "";
-    private static String movementFolder = "";
-
+    public static String movementFolder = "";
+    public static boolean configurationReadSuccess = false;
     private final LinkedList<Train> trains;
     private final LinkedList<RailroadStation> stations;
     private LinkedList<RailwayCrossing> railwayCrossings;
@@ -200,6 +200,13 @@ public class Simulation
     }
     private boolean readConfiguration()
     {
+        //configuration file:
+        /*
+        cartrack1Count-cartrack2Count-cartrack3Count
+        track1speedlimit-track2speedlimit-track3speedlimit
+        trainfolderLocation
+        movementfolderLocation
+         */
         BufferedReader reader;
         try
         {
@@ -257,22 +264,23 @@ public class Simulation
         carBuilder.updateVehicleCount(carCountTrack1,carCountTrack2,carCountTrack3);
         carBuilder.updateSpeed(track1SpeedLimit,track2SpeedLimit,track3SpeedLimit);
 
-
     }
 
     public void start()
     {
         try
         {
-            //read tracks configuration
+            //read simulation configuration
             if(!readConfiguration())
                 throw new InaccessibleObjectException("Reading config file failed!");
+            else
+                configurationReadSuccess = true;
 
             //create railroad stations and crossings
             initializeRailroadStations();
             initializeRailwayCrossings();
 
-            //start file watchers
+            //start FS watchers
             Watcher trainWatcher = new Watcher(trainFolder, this.getClass().getDeclaredMethod("addTrain", String.class),this);
             trainWatcher.start();
 

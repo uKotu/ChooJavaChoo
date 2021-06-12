@@ -6,5 +6,4 @@ public class SleepCarriage extends PassengerCarriage
     {
         super(carriageLength);
     }
-
 }

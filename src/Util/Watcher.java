@@ -54,9 +54,11 @@ public class Watcher extends Thread
                     if (kind.equals(StandardWatchEventKinds.ENTRY_CREATE))
                     {
                         updateMethod.invoke(sim,filePath+"\\"+fileName);
+                        //since we have two watchers, one checks the train folder for new trains
                     }
                     if(kind.equals(StandardWatchEventKinds.ENTRY_MODIFY) && fileName.equals("config.cfg"))
                     {
+                        //other one check for changes in the config.cfg file
                         updateMethod.invoke(sim,null);
                     }
                 }

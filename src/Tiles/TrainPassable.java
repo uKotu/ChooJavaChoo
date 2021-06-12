@@ -1,8 +1,6 @@
 package Tiles;
 
-import javafx.scene.paint.Color;
-
-public interface TrainPassable
+public interface TrainPassable // for all tiles that can be accessed by a train
 {
     void setElectricityOn();
     void setElectricityOff();

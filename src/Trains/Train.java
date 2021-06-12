@@ -33,7 +33,6 @@ public class Train implements Runnable
     private int trainPartsWhichHaveLeftThePlatform, trainPartsWhichHaveEnteredThePlatform;
     private final Power powerType;
 
-
     private final String movementFolder;
     private final LinkedList<MovementHistoryUnit> movementHistoryList;
 
@@ -49,8 +48,8 @@ public class Train implements Runnable
         this.positionOnRoute = 0;
         this.stations = stations;
         this.trainDescription = trainDescription;
-        trainPartsWhichHaveLeftThePlatform = 0;
-        trainPartsWhichHaveEnteredThePlatform = 0;
+        this.trainPartsWhichHaveLeftThePlatform = 0;
+        this.trainPartsWhichHaveEnteredThePlatform = 0;
         this.map = map;
         this.movementHistoryList = new LinkedList<>();
         this.movementFolder = movementFolder;
@@ -66,12 +65,19 @@ public class Train implements Runnable
                 break;
             }
         }
+
+        if(powerType == Power.ELECTRIC)
+        {
+            this.parts.addFirst(new ElectricBarrier());
+            this.parts.addLast(new ElectricBarrier());
+        }
     }
 
     private LinkedList<TrainTrackTile> getAdjacentFreeTracks()
     {
         LinkedList<TrainTrackTile> adjacentTracks = new LinkedList<>();
-        Locomotive trainHead = (Locomotive) parts.get(0); //first part of the train must be a locomotive
+        Connectable trainLeadingPart = parts.get(0);
+
         if (currentState==TrainState.Parked || this.trainPartsWhichHaveLeftThePlatform==0)
         {
             //if the train is parked or is just starting to move,
@@ -80,21 +86,22 @@ public class Train implements Runnable
         }
         else
         {
-            if (map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()] instanceof TrainPassable
-                    && !map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()].isTaken())
-                adjacentTracks.add((TrainTrackTile) map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()]);
+            //check all adjacent tracks to its current position, find ones which are traversable by train and are not taken
+            if (map[trainLeadingPart.getxCoordinate() + 1][trainLeadingPart.getyCoordinate()] instanceof TrainPassable
+                    && !map[trainLeadingPart.getxCoordinate() + 1][trainLeadingPart.getyCoordinate()].isTaken())
+                adjacentTracks.add((TrainTrackTile) map[trainLeadingPart.getxCoordinate() + 1][trainLeadingPart.getyCoordinate()]);
 
-            if (map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1] instanceof TrainPassable
-                    && !map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1].isTaken())
-                adjacentTracks.add((TrainTrackTile) map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1]);
+            if (map[trainLeadingPart.getxCoordinate()][trainLeadingPart.getyCoordinate() + 1] instanceof TrainPassable
+                    && !map[trainLeadingPart.getxCoordinate()][trainLeadingPart.getyCoordinate() + 1].isTaken())
+                adjacentTracks.add((TrainTrackTile) map[trainLeadingPart.getxCoordinate()][trainLeadingPart.getyCoordinate() + 1]);
 
-            if (map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()] instanceof TrainPassable
-                    && !map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()].isTaken())
-                adjacentTracks.add((TrainTrackTile) map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()]);
+            if (map[trainLeadingPart.getxCoordinate() - 1][trainLeadingPart.getyCoordinate()] instanceof TrainPassable
+                    && !map[trainLeadingPart.getxCoordinate() - 1][trainLeadingPart.getyCoordinate()].isTaken())
+                adjacentTracks.add((TrainTrackTile) map[trainLeadingPart.getxCoordinate() - 1][trainLeadingPart.getyCoordinate()]);
 
-            if (map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1] instanceof TrainPassable
-                    && !map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1].isTaken())
-                adjacentTracks.add((TrainTrackTile) map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1]);
+            if (map[trainLeadingPart.getxCoordinate()][trainLeadingPart.getyCoordinate() - 1] instanceof TrainPassable
+                    && !map[trainLeadingPart.getxCoordinate()][trainLeadingPart.getyCoordinate() - 1].isTaken())
+                adjacentTracks.add((TrainTrackTile) map[trainLeadingPart.getxCoordinate()][trainLeadingPart.getyCoordinate() - 1]);
         }
             return adjacentTracks;
     }
@@ -102,7 +109,7 @@ public class Train implements Runnable
     private boolean isStuckInTraffic()
     {
         LinkedList<Tile> adjacentTakenTracks = new LinkedList<>();
-        Connectable trainHead =  parts.get(0); //first part of the train must be a locomotive
+        Connectable trainHead =  parts.get(0);
 
         if (!(map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()] instanceof StationTile)
                 && map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()] !=null
@@ -129,7 +136,6 @@ public class Train implements Runnable
         {
             for(var part: parts)
             {
-
                 if (track.getContent().equals(part.toString()))
                 {
                     numberOfHits++;
@@ -251,7 +257,7 @@ public class Train implements Runnable
      */
 
 
-    private  void enterParking()
+    private void enterParking()
     {
         int newX, newY;
 
@@ -288,7 +294,7 @@ public class Train implements Runnable
         trainPartsWhichHaveEnteredThePlatform++;
 
         // entire train is parked, position it inside the new station
-        // and restart the parking counters
+        // restart the parking counters, set it to a new state and exit function
         if(trainPartsWhichHaveEnteredThePlatform == parts.size())
         {
             currentState = TrainState.Parked;
@@ -298,26 +304,26 @@ public class Train implements Runnable
             positionOnRoute++;
             currentStation=nextStation;
 
-            if(positionOnRoute+1 == route.length())// +1 because the train started at a certain location
+            if(positionOnRoute+1 == route.length())// +1 because the train had to start at a certain location
                 trainAlive = false;
             if(trainAlive)
                 nextStation.addTrainToQueue(this);
             return;
         }
 
+        //train is not yet parked, draw the train parts which have not yet entered the platform
         Platform.runLater(() ->
         {
-
             for(int i = 0; i < parts.size()-trainPartsWhichHaveEnteredThePlatform;i++)
             {
-                //draw all train parts which have not entered the platform
+
                 map[parts.get(parts.size()-1-i).getxCoordinate()][parts.get(parts.size()-1-i).getyCoordinate()].putContent(parts.get(parts.size()-1-i).toString());
             }
         });
 
 
     }
-    private  void exitParking()
+    private void exitParking()
     {
         int newX, newY;
 
@@ -325,7 +331,6 @@ public class Train implements Runnable
 
 
         HashMap<Integer, Tile> tileDistanceMap = new HashMap<>();
-        //sort zero aka wait
         for (var track : getAdjacentFreeTracks())
         {
             int distance = Coordinates.calculateDistance(
@@ -350,7 +355,7 @@ public class Train implements Runnable
             var front = parts.get(i - 1);
             var rear = parts.get(i);
 
-            //zasto ovo nije radilo
+            // why wasnt it working?
             // Platform.runLater(() -> map[rear.getxCoordinate()][rear.getyCoordinate()].putContent(""));
             rear.setxCoordinate(front.getxCoordinate());
             rear.setyCoordinate(front.getyCoordinate());
@@ -379,19 +384,21 @@ public class Train implements Runnable
         if(trainPartsWhichHaveLeftThePlatform==parts.size())
         {
             currentState = TrainState.Normal;
-
         }
-
     }
-    private  void move()
+
+    private void move()
     {
         int newX, newY;
         RailroadStation nextStation = getNextStation();
 
         if(getAdjacentFreeTracks().size()==0)
         {
+            //if there are no adjacent free tracks and the train is not stuck in traffic
+            //that means that it must be entering parking -> change its state
             if(isStuckInTraffic())
             {
+                //if it is stuck in traffic, wait
                 return;
             }
             currentState = TrainState.EnteringParking;
@@ -484,7 +491,7 @@ public class Train implements Runnable
     {
         try
         {
-            String newFileName = movementFolder + "\\"  + this;
+            String newFileName = movementFolder + "\\"  + this.trainDescription;
             File file = new File(newFileName);
             file.createNewFile();
             FileOutputStream fout = new FileOutputStream(newFileName);
@@ -501,7 +508,6 @@ public class Train implements Runnable
             Main.logger.log(Level.SEVERE,ex.getMessage(),ex);
         }
     }
-
     public int getTrainLength()
     {
         return parts.size();

@@ -2,6 +2,7 @@ package FXML;
 
 import Main.Main;
 import Util.MovementHistory;
+import Util.Simulation;
 import javafx.fxml.FXML;
 import javafx.scene.control.TextArea;
 import javafx.stage.FileChooser;
@@ -24,9 +25,11 @@ public class MovementHistoryWindow
         FileChooser filePicker = new FileChooser();
         Stage stage = new Stage();
 
-        //TODO
-        // filePicker.setInitialDirectory();
-        // get the movementFolder
+        if(Simulation.configurationReadSuccess)
+        {
+            //if the configuration has been read, set the initial directory of filepicker to movement folder
+            filePicker.setInitialDirectory(new File(Simulation.movementFolder));
+        }
         File file = filePicker.showOpenDialog(stage);
 
         if (file != null)

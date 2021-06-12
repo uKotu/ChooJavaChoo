@@ -2,10 +2,10 @@ package Tiles;
 
 import javafx.scene.paint.Color;
 
-public class RailwayCrossingTile extends TrainTrackTile implements TrainPassable, CarPassable
+public class RailwayCrossingTile extends TrainTrackTile implements TrainPassable, VehiclePassable
 {
-    Color carTrackColor = Color.BLACK;
-    MovementSide movementSide;
+    private Color carTrackColor = Color.BLACK;
+    private final MovementSide movementSide;
 
     public RailwayCrossingTile(String tileContent, double x, double y, double width, double height, MovementSide movementSide)
     {

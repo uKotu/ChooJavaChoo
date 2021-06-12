@@ -7,7 +7,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Rectangle;
 
 public abstract class Tile extends StackPane
-
 {
     protected Rectangle rectangle;
     protected Label label;
@@ -32,11 +31,6 @@ public abstract class Tile extends StackPane
     public StringProperty getTextProperty()
     {
         return label.textProperty();
-    }
-
-    public Coordinates getCoordinates()
-    {
-        return coordinates;
     }
 
     public boolean isTaken()

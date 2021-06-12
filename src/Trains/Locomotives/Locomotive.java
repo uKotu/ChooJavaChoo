@@ -16,8 +16,6 @@ public abstract class Locomotive implements Connectable
         this.locomotiveID=++locomotiveCount;
         this.power = power;
         this.powerType = powerType;
-
-
     }
 
     public int getxCoordinate()
@@ -45,7 +43,7 @@ public abstract class Locomotive implements Connectable
     @Override
     public String toString()
     {
-        return "L"+locomotiveID;
+        return "L" + locomotiveID;
     }
 
     public Power getPowerType()

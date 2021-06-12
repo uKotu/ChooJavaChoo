@@ -5,7 +5,7 @@ import Util.RailwayCrossing;
 
 public class Truck extends Vehicle
 {
-    double weightAllowed;
+    private final double weightAllowed;
 
     public Truck(String type, String model, int buildYear, double weightAllowed, Tile[][] map, Tile entryPoint, Tile exitPoint, double allowedSpeed, RailwayCrossing railwayCrossing)
     {

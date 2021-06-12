@@ -34,13 +34,13 @@ public class RailroadStation
     public synchronized boolean greenLight()
     {
         Train nextTrain = trainQueue.peek();
-        for(var x : railPaths)
+        for(var railpath : railPaths)
         {
-                if (x.stationsConnected.contains(nextTrain.nextStationName() + ""))
+                if (railpath.stationsConnected.contains(nextTrain.nextStationName() + ""))
                 {
                     synchronized (Train.class)
                     {
-                        if (x.isPathClear() || noIncomingTrainsOnTheRailPath(x)) //|| x.trainIsMovingAway()
+                        if (railpath.isPathClear() || noIncomingTrainsOnTheRailPath(railpath)) //|| x.trainIsMovingAway()
                         {
                             trainQueue.removeFirst();
                             return true;
@@ -77,6 +77,7 @@ public class RailroadStation
     {
         return tilesTaken.get(0).getxCoordinate();
     }
+
     public int getyCoordinate()
     {
         return tilesTaken.get(0).getyCoordinate();
@@ -87,10 +88,10 @@ public class RailroadStation
         return possibleExitCoordinates;
     }
 
-
     public String getName() {
         return name;
     }
+
     public void addTrainToQueue(Train train)
     {
         this.trainQueue.add(train);

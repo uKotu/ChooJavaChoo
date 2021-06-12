@@ -9,9 +9,7 @@ public abstract class Carriage implements Connectable
     private int carriageID;
     private int carriageLength;
 
-
     private int xCoordinate, yCoordinate;
-
 
     protected Carriage(int carriageLength)
     {

@@ -1,7 +1,5 @@
 package Util;
 
-import java.util.LinkedList;
-
 public class Coordinates
 {
     int x,y;
@@ -28,10 +26,5 @@ public class Coordinates
                 + Math.abs(currentCoordinates.getY()-destinationCoordinates.getY());
     }
 
-    public static LinkedList<Coordinates> getAdjacentCoordinates()
-    {
-        LinkedList<Coordinates> returnValue = new LinkedList<>();
-        return returnValue;
-    }
 
 }

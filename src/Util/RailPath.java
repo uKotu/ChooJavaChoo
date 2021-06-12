@@ -24,7 +24,7 @@ public class RailPath
     }
     public boolean isPathClear()
     {
-        synchronized (Train.class)
+        synchronized (map) // sync over train.class
         {
             for(Tile x: tilesOnPath)
             {

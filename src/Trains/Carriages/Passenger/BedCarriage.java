@@ -2,7 +2,7 @@ package Trains.Carriages.Passenger;
 
 public class BedCarriage extends PassengerCarriage
 {
-    int numberOfBeds;
+    private final int numberOfBeds;
 
     public BedCarriage(int carriageLength, int numberOfBeds)
     {

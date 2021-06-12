@@ -1,6 +1,6 @@
 package Vehicles;
 import Main.Main;
-import Tiles.CarPassable;
+import Tiles.VehiclePassable;
 import Tiles.MovementSide;
 import Tiles.Tile;
 import Util.Coordinates;
@@ -44,9 +44,9 @@ public abstract class Vehicle implements Runnable
         pastLocations = new LinkedList<>();
     }
 
-    private LinkedList<CarPassable> getAdjacentTracks()
+    private LinkedList<VehiclePassable> getAdjacentTracks()
     {
-        LinkedList<CarPassable> adjacentTracks;
+        LinkedList<VehiclePassable> adjacentTracks;
         synchronized (map)
         {
             adjacentTracks = new LinkedList<>();
@@ -55,40 +55,40 @@ public abstract class Vehicle implements Runnable
             int upperY = currentPosition.getyCoordinate() + 1;
             if ((upperX >= 0 && upperX < 30) && (upperY >= 0 && upperY < 30))
             {
-                if (map[upperX][upperY] instanceof CarPassable
-                        && (((CarPassable) map[upperX][upperY]).getMovementSide() == this.getMovementSide())
+                if (map[upperX][upperY] instanceof VehiclePassable
+                        && (((VehiclePassable) map[upperX][upperY]).getMovementSide() == this.getMovementSide())
                         && !map[upperX][upperY].isTaken() && !pastLocations.contains(map[upperX][upperY]))
-                    adjacentTracks.add((CarPassable) map[upperX][upperY]);
+                    adjacentTracks.add((VehiclePassable) map[upperX][upperY]);
             }
 
             int rightX = currentPosition.getxCoordinate() + 1;
             int rightY = currentPosition.getyCoordinate();
             if ((rightX >= 0 && rightX < 30) && (rightY >= 0 && rightY < 30))
             {
-                if (map[rightX][rightY] instanceof CarPassable
-                        && (((CarPassable) map[rightX][rightY]).getMovementSide() == this.getMovementSide())
+                if (map[rightX][rightY] instanceof VehiclePassable
+                        && (((VehiclePassable) map[rightX][rightY]).getMovementSide() == this.getMovementSide())
                         && !map[rightX][rightY].isTaken() && !pastLocations.contains(map[rightX][rightY]))
-                    adjacentTracks.add((CarPassable) map[rightX][rightY]);
+                    adjacentTracks.add((VehiclePassable) map[rightX][rightY]);
             }
 
             int leftX = currentPosition.getxCoordinate() - 1;
             int leftY = currentPosition.getyCoordinate();
             if ((leftX >= 0 && leftX < 30) && (leftX >= 0 && leftY < 30))
             {
-                if (map[leftX][leftY] instanceof CarPassable
-                        && (((CarPassable) map[leftX][leftY]).getMovementSide() == this.getMovementSide())
+                if (map[leftX][leftY] instanceof VehiclePassable
+                        && (((VehiclePassable) map[leftX][leftY]).getMovementSide() == this.getMovementSide())
                         && !map[leftX][leftY].isTaken() && !pastLocations.contains(map[leftX][leftY]))
-                    adjacentTracks.add((CarPassable) map[leftX][leftY]);
+                    adjacentTracks.add((VehiclePassable) map[leftX][leftY]);
             }
 
             int bottomX = currentPosition.getxCoordinate();
             int bottomY = currentPosition.getyCoordinate() - 1;
             if ((bottomX >= 0 && bottomX < 30) && (bottomY >= 0 && bottomY < 30))
             {
-                if (map[bottomX][bottomY] instanceof CarPassable
-                        && (((CarPassable) map[bottomX][bottomY]).getMovementSide()) == this.getMovementSide()
+                if (map[bottomX][bottomY] instanceof VehiclePassable
+                        && (((VehiclePassable) map[bottomX][bottomY]).getMovementSide()) == this.getMovementSide()
                         && !map[bottomX][bottomY].isTaken() && !pastLocations.contains(map[bottomX][bottomY]))
-                    adjacentTracks.add((CarPassable) map[bottomX][bottomY]);
+                    adjacentTracks.add((VehiclePassable) map[bottomX][bottomY]);
             }
         }
         return adjacentTracks;
@@ -123,6 +123,9 @@ public abstract class Vehicle implements Runnable
         }
     }
 
+    //almost the same logic as the train movement; the car gets spawned at a location
+    //checks its adjacent tiles to ones to which it can move, if any are available
+    //AND IT GETS THEM CLOSER TO THE EXIT, then move to that tile
     private synchronized void move()
     {
         if(currentPosition==exitPoint)
@@ -172,6 +175,6 @@ public abstract class Vehicle implements Runnable
 
     public MovementSide getMovementSide()
     {
-        return ((CarPassable)this.entryPoint).getMovementSide();
+        return ((VehiclePassable)this.entryPoint).getMovementSide();
     }
 }

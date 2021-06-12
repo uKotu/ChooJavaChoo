@@ -13,16 +13,16 @@ public class CarBuilder implements Runnable
 {
     private volatile int track1VehicleCount, track2VehicleCount, track3VehicleCount;
     private volatile double track1Speed, track2Speed, track3Speed;
-    Tile track1LStartLocation, track2LStartLocation, track3LStartLocation,
+    private final Tile track1LStartLocation, track2LStartLocation, track3LStartLocation,
             track1RStartLocation, track2RStartLocation, track3RStartLocation;
 
-    Tile track1LEndLocation, track2LEndLocation, track3LEndLocation,
+    private final Tile track1LEndLocation, track2LEndLocation, track3LEndLocation,
             track1REndLocation, track2REndLocation, track3REndLocation;
-    Tile[][] map;
+    private final Tile[][] map;
     LinkedList<RailwayCrossing> railwayCrossings;
 
-    Random randomGenerator;
-    private boolean isAlive ;
+    private Random randomGenerator;
+    private boolean isAlive;
 
     ArrayDeque<Vehicle> track1Queue, track2Queue, track3Queue;
 
@@ -32,6 +32,8 @@ public class CarBuilder implements Runnable
             throw new IllegalArgumentException("VehicleTrackTile not defined");
         try
         {
+            //since the naming and vehicle characteristics were not specified
+            //we give them all the same names and models, but with different characteristics(door numbers, weight, yearOfProduction)
             String carManufacturerName = "BMW";
             String carModelName = "M3";
 
@@ -181,46 +183,43 @@ public class CarBuilder implements Runnable
                 if(!track1Queue.isEmpty())
                 {
                     Vehicle vehicle = track1Queue.peekFirst();
-                    if(vehicle.getEntryPoint().isTaken())
+                    if(!vehicle.getEntryPoint().isTaken())
                     {
-                        continue;
-                    }
-                    vehicle = track1Queue.pollFirst();
-                    if (vehicle != null)
-                    {
-                        vehicle.setAlive(true);
-                        Thread vehicleThread = new Thread(vehicle, vehicle.toString());
-                        vehicleThread.start();
+                        vehicle = track1Queue.pollFirst();
+                        if (vehicle != null)
+                        {
+                            vehicle.setAlive(true);
+                            Thread vehicleThread = new Thread(vehicle, vehicle.toString());
+                            vehicleThread.start();
+                        }
                     }
                 }
                 if(!track2Queue.isEmpty())
                 {
                     Vehicle vehicle = track2Queue.peekFirst();
-                    if(vehicle.getEntryPoint().isTaken())
+                    if(!vehicle.getEntryPoint().isTaken())
                     {
-                        continue;
-                    }
-                    vehicle = track2Queue.pollFirst();
-                    if(vehicle != null)
-                    {
-                        vehicle.setAlive(true);
-                        Thread vehicleThread = new Thread(vehicle, vehicle.toString());
-                        vehicleThread.start();
+                        vehicle = track2Queue.pollFirst();
+                        if (vehicle != null)
+                        {
+                            vehicle.setAlive(true);
+                            Thread vehicleThread = new Thread(vehicle, vehicle.toString());
+                            vehicleThread.start();
+                        }
                     }
                 }
                 if(!track3Queue.isEmpty())
                 {
                     Vehicle vehicle = track3Queue.peekFirst();
-                    if(vehicle.getEntryPoint().isTaken())
+                    if(!vehicle.getEntryPoint().isTaken())
                     {
-                        continue;
-                    }
-                    vehicle = track3Queue.pollFirst();
-                    if(vehicle!=null)
-                    {
-                        vehicle.setAlive(true);
-                        Thread vehicleThread = new Thread(vehicle, vehicle.toString());
-                        vehicleThread.start();
+                        vehicle = track3Queue.pollFirst();
+                        if (vehicle != null)
+                        {
+                            vehicle.setAlive(true);
+                            Thread vehicleThread = new Thread(vehicle, vehicle.toString());
+                            vehicleThread.start();
+                        }
                     }
                 }
 
