@@ -86,6 +86,8 @@ public class Train implements Runnable
         }
         else
         {
+            synchronized (map)
+            {
             //check all adjacent tracks to its current position, find ones which are traversable by train and are not taken
             if (map[trainLeadingPart.getxCoordinate() + 1][trainLeadingPart.getyCoordinate()] instanceof TrainPassable
                     && !map[trainLeadingPart.getxCoordinate() + 1][trainLeadingPart.getyCoordinate()].isTaken())
@@ -102,47 +104,52 @@ public class Train implements Runnable
             if (map[trainLeadingPart.getxCoordinate()][trainLeadingPart.getyCoordinate() - 1] instanceof TrainPassable
                     && !map[trainLeadingPart.getxCoordinate()][trainLeadingPart.getyCoordinate() - 1].isTaken())
                 adjacentTracks.add((TrainTrackTile) map[trainLeadingPart.getxCoordinate()][trainLeadingPart.getyCoordinate() - 1]);
+            }
         }
             return adjacentTracks;
     }
 
     private boolean isStuckInTraffic()
     {
-        LinkedList<Tile> adjacentTakenTracks = new LinkedList<>();
-        Connectable trainHead =  parts.get(0);
-
-        if (!(map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()] instanceof StationTile)
-                && map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()] !=null
-                && map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()].isTaken())
-            adjacentTakenTracks.add(map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()]);
-
-        if (!(map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1] instanceof StationTile)
-                && map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1] != null
-                && map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1].isTaken())
-            adjacentTakenTracks.add(map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1]);
-
-        if (!(map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()] instanceof StationTile)
-                && map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()] != null
-                && map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()].isTaken())
-            adjacentTakenTracks.add(map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()]);
-
-        if (!(map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1] instanceof StationTile)
-                && map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1] != null
-                && map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1].isTaken())
-            adjacentTakenTracks.add(map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1]);
-
-        int numberOfHits = 0;
-        for(var track: adjacentTakenTracks)
+        synchronized (map)
         {
-            for(var part: parts)
+            LinkedList<Tile> adjacentTakenTracks = new LinkedList<>();
+            Connectable trainHead = parts.get(0);
+
+            if (!(map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()] instanceof StationTile)
+                    && map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()] != null
+                    && map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()].isTaken())
+                adjacentTakenTracks.add(map[trainHead.getxCoordinate() + 1][trainHead.getyCoordinate()]);
+
+            if (!(map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1] instanceof StationTile)
+                    && map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1] != null
+                    && map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1].isTaken())
+                adjacentTakenTracks.add(map[trainHead.getxCoordinate()][trainHead.getyCoordinate() + 1]);
+
+            if (!(map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()] instanceof StationTile)
+                    && map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()] != null
+                    && map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()].isTaken())
+                adjacentTakenTracks.add(map[trainHead.getxCoordinate() - 1][trainHead.getyCoordinate()]);
+
+            if (!(map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1] instanceof StationTile)
+                    && map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1] != null
+                    && map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1].isTaken())
+                adjacentTakenTracks.add(map[trainHead.getxCoordinate()][trainHead.getyCoordinate() - 1]);
+
+            int numberOfHits = 0;
+            for (var track : adjacentTakenTracks)
             {
-                if (track.getContent().equals(part.toString()))
+                for (var part : parts)
                 {
-                    numberOfHits++;
+                    if (track.getContent().equals(part.toString()))
+                    {
+                        numberOfHits++;
+                    }
                 }
             }
+            return !(numberOfHits==adjacentTakenTracks.size());
         }
-        return !(numberOfHits==adjacentTakenTracks.size());
+
     }
 
     public char nextStationName()
@@ -197,7 +204,7 @@ public class Train implements Runnable
                         try
                         {
                             Thread.sleep(((long)trainSpeed*1000));
-                            synchronized (Train.class)
+                            synchronized (map)
                             {
                                 move();
                             }
@@ -213,7 +220,7 @@ public class Train implements Runnable
                         try
                         {
                             Thread.sleep((long)trainSpeed*1000);
-                            synchronized (Train.class)
+                            synchronized (map)
                             {
                                 exitParking();
                             }
@@ -229,7 +236,7 @@ public class Train implements Runnable
                     try
                     {
                         Thread.sleep((long)trainSpeed*1000);
-                        synchronized (Train.class)
+                        synchronized (map)
                         {
                             enterParking();
                         }
@@ -257,7 +264,7 @@ public class Train implements Runnable
      */
 
 
-    private void enterParking()
+    private synchronized void enterParking()
     {
         int newX, newY;
 
@@ -323,7 +330,7 @@ public class Train implements Runnable
 
 
     }
-    private void exitParking()
+    private synchronized void exitParking()
     {
         int newX, newY;
 
@@ -387,7 +394,7 @@ public class Train implements Runnable
         }
     }
 
-    private void move()
+    private synchronized void move()
     {
         int newX, newY;
         RailroadStation nextStation = getNextStation();

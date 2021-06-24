@@ -31,14 +31,14 @@ public class RailroadStation
     {
         return trainQueue.peek() == train;
     }
-    public synchronized boolean greenLight()
+    public boolean greenLight()
     {
         Train nextTrain = trainQueue.peek();
         for(var railpath : railPaths)
         {
                 if (railpath.stationsConnected.contains(nextTrain.nextStationName() + ""))
                 {
-                    synchronized (Train.class)
+                    synchronized (railpath.map)//train.class
                     {
                         if (railpath.isPathClear() || noIncomingTrainsOnTheRailPath(railpath)) //|| x.trainIsMovingAway()
                         {
